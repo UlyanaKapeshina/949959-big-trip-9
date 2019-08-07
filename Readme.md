@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Ульяна Капешина](https://up.htmlacademy.ru/ecmascript/9/user/949959).
-* Наставник: `Неизвестно`.
+* Наставник: [Евгений Фаллер](https://htmlacademy.ru/profile/id505933).
 
 ---
 
