@@ -1,4 +1,4 @@
-export const getEventTemplate = ({type, city, price, description, start, end, hours, minutes, offers}) => `<li class="trip-events__item">
+export const getEventTemplate = ({type, city, price, start, end, hours, minutes, offers}) => `<li class="trip-events__item">
     <div class="event">
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type.split(` `)[0].toLowerCase()}.png" alt="Event type icon">

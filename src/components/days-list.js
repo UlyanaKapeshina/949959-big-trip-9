@@ -11,8 +11,8 @@ export const getDaysListTemplate = (events, dates, transfer, activity, cities, o
       return eventDate === date;
     });
     return getDayTemplate(index, date, dayEvents, transfer, activity, cities, options);
-   }).join(``)
-  }
+  }).join(``)
+}
 </ul>`;
 
 };

@@ -13,11 +13,11 @@ export const getDayTemplate = (dayIndex, date, events, transfer, activity, citie
 
 <ul class="trip-events__list">
 ${events.map((event, index) => {
-  if (dayIndex === 0 && index === 0) {
-    return getEditEventTemplate(event, transfer, activity, cities, options);
-  }
-  return getEventTemplate(event);
-}).join(`
+    if (dayIndex === 0 && index === 0) {
+      return getEditEventTemplate(event, transfer, activity, cities, options);
+    }
+    return getEventTemplate(event);
+  }).join(`
 `)}
 </ul>
 </li>`;
