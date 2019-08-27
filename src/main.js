@@ -18,74 +18,81 @@ import {
   CITIES,
   OPTIONS,
   filtersNames,
+  getUniqDates,
+  getCities,
 } from "./data.js";
-import {
-  render,
-  remove,
-} from "./util.js";
 
 const tripControls = document.querySelector(`.trip-controls`);
 const tripEvents = document.querySelector(`.trip-events`);
 const tripInfo = document.querySelector(`.trip-main__trip-info `);
 const eventsData = getEventsData(EVENT_COUNT);
-const getCities = () => {
-  return eventsData.map((event) => event.city);
-};
-
-const getDatesStart = () => {
-  return eventsData.map((event) => new Date(event.start));
-};
-
-const getDatesEnd = () => {
-  return eventsData.map((event) => new Date(event.end));
-};
-const tripDaysDates = Array.from(new Set(getDatesStart().map((date) => `${date}`.slice(4, 10))));
+const uniqDates = getUniqDates(eventsData);
+const tripCities = getCities(eventsData);
 
 const renderMenu = () => {
   const menu = new Menu(menuValues);
   tripControls.querySelector(`h2`).after(menu.getElement());
 };
+
 const renderFilters = () => {
   const filters = new Filters(filtersNames);
   tripControls.append(filters.getElement());
 };
+
 const renderTripInfo = () => {
-  const info = new TripInfo(getCities(), getDatesStart(), getDatesEnd());
+  const info = new TripInfo(tripCities, eventsData);
   tripInfo.prepend(info.getElement());
 };
+
 const renderSort = () => {
   const sort = new Sort();
   tripEvents.querySelector(`h2`).after(sort.getElement());
 };
+
+// отрисовка списка для дней со днями
 const renderDaysList = () => {
   const daysList = new DaysList();
   tripEvents.append(daysList.getElement());
-  return daysList;
+
+  uniqDates.map((date, index) => {
+    return renderDay(date, index, daysList.getElement());
+  });
 };
+
+// отрисовка дня со списком для эвентов и эвентами в нем
+const renderDay = (date, index, container) => {
+  const eventsInDayData = getDayEvents(date); // список эвентов в данную дату
+
+  const day = new Day(eventsInDayData[0].start, index);
+  container.append(day.getElement());
+
+  const eventsList = renderEventsList(day.getElement()); // отрисовка списка для эвентов в день
+  eventsInDayData.map((eventData) => {
+    renderEvent(eventData, eventsList.getElement());
+  });
+};
+// отрисовка списка для эвентов
 const renderEventsList = (container) => {
   const eventsList = new EventsList();
   container.append(eventsList.getElement());
   return eventsList;
 };
-const renderDay = (date, index) => {
-  const day = new Day(date, index);
-  daysList.getElement().append(day.getElement());
-  const eventsInDayData = getDayEvents(date);  // берем эвенты в эту дату
-  const list = renderEventsList(day.getElement());
-  renderEvents(eventsInDayData, list.getElement());
-};
-const renderDays = () => {
-  tripDaysDates.map((date, index) => {
-    const day = renderDay(date, index);
-    return day;
+
+// фильтрация эвентов по дням
+const getDayEvents = (date) => {
+  const dayEvents = eventsData.filter((event) => {
+    return event.date === date;
   });
+  return dayEvents;
 };
 
+// отрисовка эвента
 const renderEvent = (eventData, container) => {
   const event = new Event(eventData);
   const eventEdit = new EventEdit(eventData, TYPES_OF_TRANSFER, TYPES_OF_ACTIVITY, CITIES, OPTIONS);
   container.append(event.getElement());
 
+  // открытие и закрытие формы редактирования
   event.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
     container.replaceChild(eventEdit.getElement(), event.getElement());
   });
@@ -98,21 +105,9 @@ const renderEvent = (eventData, container) => {
   });
 };
 
-const renderEvents = (eventsInDayData, container) => {
-  const events = eventsInDayData.map((eventData) => {
-    renderEvent(eventData, container);
-  });
-};
-const getDayEvents = (date) => {
-  const dayEvents = eventsData.filter((event) => {
-    return event.date === date;
-  });
-  return dayEvents;
-};
-
 renderTripInfo();
 renderMenu();
 renderFilters();
 renderSort();
-const daysList = renderDaysList();
-renderDays();
+renderDaysList();
+

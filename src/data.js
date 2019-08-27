@@ -89,6 +89,13 @@ export const getEventsData = (count) => {
   return events.fill(``).map(getEvent).sort((a, b) => a.start - b.start);
 };
 
+export const getUniqDates = (eventsData) => {
+  return Array.from(new Set(eventsData.map((eventData) => eventData.date)));
+};
+export const getCities = (eventsData) => {
+  return eventsData.map((event) => event.city);
+};
+
 export const menuValues = [
   {
     title: `Table`,
