@@ -9,6 +9,7 @@ import Day from './components/day.js';
 import EventsList from './components/events-list.js';
 import Event from './components/event.js';
 import EventEdit from './components/edit-event.js';
+import EventAdd from './components/add-event.js';
 
 import {
   getEventsData,
@@ -24,7 +25,8 @@ import {
 
 const tripControls = document.querySelector(`.trip-controls`);
 const tripEvents = document.querySelector(`.trip-events`);
-const tripInfo = document.querySelector(`.trip-main__trip-info `);
+const tripInfo = document.querySelector(`.trip-main__trip-info`);
+const addButton = document.querySelector(`.trip-main__event-add-btn`);
 const eventsData = getEventsData(EVENT_COUNT);
 const uniqDates = getUniqDates(eventsData);
 const tripCities = getCities(eventsData);
@@ -47,6 +49,11 @@ const renderTripInfo = () => {
 const renderSort = () => {
   const sort = new Sort();
   tripEvents.querySelector(`h2`).after(sort.getElement());
+};
+const renderEventAdd = () => {
+  const eventAdd = new EventAdd(TYPES_OF_TRANSFER, TYPES_OF_ACTIVITY, CITIES);
+  tripEvents.append(eventAdd.getElement());
+  addButton.disabled = true;
 };
 
 // отрисовка списка для дней со днями
@@ -93,21 +100,34 @@ const renderEvent = (eventData, container) => {
   container.append(event.getElement());
 
   // открытие и закрытие формы редактирования
+  const onEscKeydown = (evt) => {
+    if (evt.key === `Esc` || evt.key === `Escape`) {
+      container.replaceChild(event.getElement(), eventEdit.getElement());
+      document.removeEventListener(`keydown`, onEscKeydown);
+    }
+  };
+
   event.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
     container.replaceChild(eventEdit.getElement(), event.getElement());
+    document.addEventListener(`keydown`, onEscKeydown);
   });
   eventEdit.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
     container.replaceChild(event.getElement(), eventEdit.getElement());
+    document.removeEventListener(`keydown`, onEscKeydown);
   });
 
   eventEdit.getElement().querySelector(`.event--edit`).addEventListener(`submit`, () => {
     container.replaceChild(event.getElement(), eventEdit.getElement());
+    document.removeEventListener(`keydown`, onEscKeydown);
   });
 };
 
-renderTripInfo();
 renderMenu();
 renderFilters();
 renderSort();
-renderDaysList();
-
+if (eventsData.length > 0) {
+  renderTripInfo();
+  renderDaysList();
+} else {
+  renderEventAdd();
+}
