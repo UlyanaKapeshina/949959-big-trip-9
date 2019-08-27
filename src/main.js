@@ -6,6 +6,7 @@ import Sort from './components/sort.js';
 
 import DaysList from './components/days-list.js';
 import Day from './components/day.js';
+import EventsList from './components/events-list.js';
 import Event from './components/event.js';
 import EventEdit from './components/edit-event.js';
 
@@ -61,30 +62,53 @@ const renderDaysList = () => {
   tripEvents.append(daysList.getElement());
   return daysList;
 };
+const renderEventsList = (container) => {
+  const eventsList = new EventsList();
+  container.append(eventsList.getElement());
+  return eventsList;
+};
 const renderDay = (date, index) => {
   const day = new Day(date, index);
-  const a = daysList.getElement();
-  a.append(day.getElement());
-  return day;
+  daysList.getElement().append(day.getElement());
+  const eventsInDayData = getDayEvents(date);  // берем эвенты в эту дату
+  const list = renderEventsList(day.getElement());
+  renderEvents(eventsInDayData, list.getElement());
 };
 const renderDays = () => {
   tripDaysDates.map((date, index) => {
-    renderDay(date, index);
+    const day = renderDay(date, index);
+    return day;
   });
 };
 
-// tripDaysDates.map((date, index) => {
-//   const dayEvents = eventsData.filter((event) => {
-//     const eventDate = `${new Date(event.start)}`.slice(4, 10);
-//     return eventDate === date;
-//   });
-//   const eventsList = renderComponent(daysList, getDayTemplate(index, date), `beforeend`);
+const renderEvent = (eventData, container) => {
+  const event = new Event(eventData);
+  const eventEdit = new EventEdit(eventData, TYPES_OF_TRANSFER, TYPES_OF_ACTIVITY, CITIES, OPTIONS);
+  container.append(event.getElement());
 
+  event.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+    container.replaceChild(eventEdit.getElement(), event.getElement());
+  });
+  eventEdit.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+    container.replaceChild(event.getElement(), eventEdit.getElement());
+  });
 
-//   dayEvents.map((event) => {
-//     renderComponent(eventsList().document.querySelector(`.trip-events__list`), getEventTemplate(event), `beforeend`);
-//   }).join(``);
-// });
+  eventEdit.getElement().querySelector(`.event--edit`).addEventListener(`submit`, () => {
+    container.replaceChild(event.getElement(), eventEdit.getElement());
+  });
+};
+
+const renderEvents = (eventsInDayData, container) => {
+  const events = eventsInDayData.map((eventData) => {
+    renderEvent(eventData, container);
+  });
+};
+const getDayEvents = (date) => {
+  const dayEvents = eventsData.filter((event) => {
+    return event.date === date;
+  });
+  return dayEvents;
+};
 
 renderTripInfo();
 renderMenu();
@@ -92,43 +116,3 @@ renderFilters();
 renderSort();
 const daysList = renderDaysList();
 renderDays();
-
-
-// const tripEvents = document.querySelector(`.trip-events`);
-// // массив с посещаемыми городами
-
-
-// // итоговая стоимость путешествия из стоимости эвентов и доп.опций
-// const getPrice = () => {
-//   const tripPrices = eventsData.map((event) => event.price).reduce((a, b) => a + b);
-//   const offersPrices = eventsData.map((event) => Array.from(event.offers).reduce((a, b) => {
-//     return a + b.price;
-//   }, 0)).reduce((a, b) => a + b);
-//   return tripPrices + offersPrices;
-// };
-
-// renderComponent(tripControls.querySelector(`h2`), getMenuTemplate(menuValues), `afterend`);
-// renderComponent(document.querySelector(`.trip-info`), getTripInfoTemplate(getCities(), getDatesStart(), getDatesEnd()), `afterbegin`);
-// renderComponent(tripControls, getFiltersTemplate(filtersNames), `beforeend`);
-// renderComponent(tripEvents, getSortTemplate(), `beforeend`);
-// renderComponent(tripEvents, getNewEventTemplate(), `beforeend`);
-// renderComponent(tripEvents, getDaysListTemplate(), `beforeend`);
-
-// const daysList = document.querySelector(`.trip-days`);
-
-// tripDaysDates.map((date, index) => {
-//   const dayEvents = eventsData.filter((event) => {
-//     const eventDate = `${new Date(event.start)}`.slice(4, 10);
-//     return eventDate === date;
-//   });
-//   const eventsList = renderComponent(daysList, getDayTemplate(index, date), `beforeend`);
-//   // const eventsList = document.querySelector(`.trip-events__list`);
-
-//   dayEvents.map((event) => {
-//     renderComponent(eventsList().document.querySelector(`.trip-events__list`), getEventTemplate(event), `beforeend`);
-//   }).join(``);
-// });
-
-// // renderComponent(tripEvents, getEventTemplate(eventsData, tripDaysDates, TYPES_OF_TRANSFER, TYPES_OF_ACTIVITY, CITIES, OPTIONS), `beforeend`);
-// // renderComponent(tripEvents, getEventEditTemplate(eventsData, tripDaysDates, TYPES_OF_TRANSFER, TYPES_OF_ACTIVITY, CITIES, OPTIONS), `beforeend`);
-// renderComponent(document.querySelector(`.trip-info__cost`), getPrice(), `beforeend`);

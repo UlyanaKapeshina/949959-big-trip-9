@@ -67,6 +67,7 @@ const getEvent = () => {
   const hours = Math.trunc(residualInHours);
   const minutes = Math.trunc((residualInHours - hours) * 60);
   return {
+    date: `${new Date(start)}`.slice(4, 10),
     type,
     city: getRandomElement(CITIES),
     price: getRandomInteger(0, 1000),

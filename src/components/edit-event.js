@@ -24,7 +24,7 @@ export default class EventEdit {
     this._typesOfActivity = typesOfActivity;
     this._cities = cities;
     this._options = options;
-    this.__element = null;
+    this._element = null;
   }
   getElement() {
     if (!this._element) {
@@ -71,7 +71,7 @@ export default class EventEdit {
         <label class="event__label  event__type-output" for="event-destination-1">
           ${this._type}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._city}" list="destination-list-1">
         <datalist id="destination-list-1">
           ${this._cities.map((CITY) => `<option value="${CITY}"></option>`)}
         </datalist>
@@ -119,7 +119,7 @@ export default class EventEdit {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
           <div class="event__available-offers">
           ${this._options.map((option) =>`<div class="event__offer-selector">
-              <input class="event__offer-checkbox  visually-hidden" id="event-offer-${option.id}-1" type="checkbox" name="event-offer-${option.id}" ${(Array.from(offers).filter((offer) => offer.option === option.option)).length > 0 ? `checked` : ``}>
+              <input class="event__offer-checkbox  visually-hidden" id="event-offer-${option.id}-1" type="checkbox" name="event-offer-${option.id}" ${(Array.from(this._offers).filter((offer) => offer.option === option.option)).length > 0 ? `checked` : ``}>
               <label class="event__offer-label" for="event-offer-${option.id}-1">
                 <span class="event__offer-title">${option.option}</span>
                 &plus;
