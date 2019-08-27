@@ -1,5 +1,5 @@
 import {
-  createElement
+  createElement, formatDate
 } from "./../util.js";
 export default class EventEdit {
   constructor({
@@ -16,8 +16,10 @@ export default class EventEdit {
     this._city = city;
     this._price = price;
     this._description = description;
-    this._start = new Date(start);
-    this._end = new Date(end);
+    this._start = formatDate(new Date(start));
+    this._end = formatDate(new Date(end));
+    this._startTime = new Date(start).toTimeString().slice(0, 5);
+    this._endTime = new Date(end).toTimeString().slice(0, 5);
     this._offers = offers;
     this._urls = urls;
     this._typesOfTransfer = typesOfTransfer;
@@ -82,12 +84,12 @@ export default class EventEdit {
       <label class="visually-hidden" for="event-start-time-1">
         From
       </label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${this._start.toString().slice(4, 21)}">
+      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${this._start} ${this._startTime}">
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">
         To
       </label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${this._end.toString().slice(4, 21)}">
+      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${this._end} ${this._endTime}">
     </div>
         <div class="event__field-group  event__field-group--price">
           <label class="event__label" for="event-price-1">
