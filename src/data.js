@@ -1,3 +1,18 @@
+import {
+  getRandomElement
+} from "./util.js";
+import {
+  getRandomArray
+} from "./util.js";
+import {
+  getArray
+} from "./util.js";
+import {
+  getRandomInteger
+} from "./util.js";
+import {
+  getRandomDate
+} from "./util.js";
 export const CITIES = [`London`, `Liverpool`, `Birmingham`, `Oxford`, `Cambridge`, `Manchester`, `Nottingham`, `Sheffield`, `Leeds`, `Bristol`, `Newcastle`];
 const DAYS_COUNT = 5;
 
@@ -41,29 +56,13 @@ export const OPTIONS = [{
 },
 ];
 
-import {
-  getRandomElement
-} from "./util.js";
-import {
-  getRandomArray
-} from "./util.js";
-import {
-  getArray
-} from "./util.js";
-import {
-  getRandomInteger
-} from "./util.js";
-import {
-  getRandomDate
-} from "./util.js";
-
-
 // описание одного эвента
 
 const getEvent = () => {
   const type = getRandomElement(TYPES_OF_EVENT);
   const start = getRandomDate(DAYS_COUNT);
   const residual = getRandomInteger(20, 180) * 60 * 1000;
+  const end = start + residual;
   const residualInHours = residual / 1000 / 60 / 60;
   const hours = Math.trunc(residualInHours);
   const minutes = Math.trunc((residualInHours - hours) * 60);
@@ -71,13 +70,13 @@ const getEvent = () => {
     type,
     city: getRandomElement(CITIES),
     price: getRandomInteger(0, 1000),
-    description: new Set(getRandomArray(1, 3, DESCRIPTIONS)),
+    description: Array.from(new Set(getRandomArray(1, 3, DESCRIPTIONS))).join(``),
     start,
-    end: start + residual,
+    end,
     hours,
     minutes,
-    offers: new Set(getRandomArray(1, 2, OPTIONS)),
-    urls: new Set(getArray(0, 5)),
+    offers: new Set(getRandomArray(1, 4, OPTIONS)),
+    urls: Array.from(new Set(getArray(0, 5))),
   };
 
 };
