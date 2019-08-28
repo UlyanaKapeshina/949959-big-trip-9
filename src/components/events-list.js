@@ -1,5 +1,7 @@
-import {createElement} from "./../util.js";
-export default class DaysList {
+import {
+  createElement
+} from "./../util.js";
+export default class EventsList {
   constructor() {
     this._element = null;
   }
@@ -16,9 +18,7 @@ export default class DaysList {
   }
 
   getTemplate() {
-    return `<ul class="trip-days">
+    return `<ul class="trip-events__list">
     </ul>`;
   }
 }
-
-

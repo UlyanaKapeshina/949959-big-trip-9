@@ -1,3 +1,18 @@
+import {
+  getRandomElement
+} from "./util.js";
+import {
+  getRandomArray
+} from "./util.js";
+import {
+  getArray
+} from "./util.js";
+import {
+  getRandomInteger
+} from "./util.js";
+import {
+  getRandomDate
+} from "./util.js";
 export const CITIES = [`London`, `Liverpool`, `Birmingham`, `Oxford`, `Cambridge`, `Manchester`, `Nottingham`, `Sheffield`, `Leeds`, `Bristol`, `Newcastle`];
 const DAYS_COUNT = 5;
 
@@ -41,43 +56,28 @@ export const OPTIONS = [{
 },
 ];
 
-import {
-  getRandomElement
-} from "./util.js";
-import {
-  getRandomArray
-} from "./util.js";
-import {
-  getArray
-} from "./util.js";
-import {
-  getRandomInteger
-} from "./util.js";
-import {
-  getRandomDate
-} from "./util.js";
-
-
 // описание одного эвента
 
 const getEvent = () => {
   const type = getRandomElement(TYPES_OF_EVENT);
   const start = getRandomDate(DAYS_COUNT);
   const residual = getRandomInteger(20, 180) * 60 * 1000;
+  const end = start + residual;
   const residualInHours = residual / 1000 / 60 / 60;
   const hours = Math.trunc(residualInHours);
   const minutes = Math.trunc((residualInHours - hours) * 60);
   return {
+    date: `${new Date(start)}`.slice(4, 10),
     type,
     city: getRandomElement(CITIES),
     price: getRandomInteger(0, 1000),
-    description: new Set(getRandomArray(1, 3, DESCRIPTIONS)),
+    description: Array.from(new Set(getRandomArray(1, 3, DESCRIPTIONS))).join(``),
     start,
-    end: start + residual,
+    end,
     hours,
     minutes,
-    offers: new Set(getRandomArray(1, 2, OPTIONS)),
-    urls: new Set(getArray(0, 5)),
+    offers: new Set(getRandomArray(1, 4, OPTIONS)),
+    urls: Array.from(new Set(getArray(0, 5))),
   };
 
 };
@@ -87,6 +87,13 @@ const getEvent = () => {
 export const getEventsData = (count) => {
   const events = new Array(count);
   return events.fill(``).map(getEvent).sort((a, b) => a.start - b.start);
+};
+
+export const getUniqDates = (eventsData) => {
+  return Array.from(new Set(eventsData.map((eventData) => eventData.date)));
+};
+export const getCities = (eventsData) => {
+  return eventsData.map((event) => event.city);
 };
 
 export const menuValues = [

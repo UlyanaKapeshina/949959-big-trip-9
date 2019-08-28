@@ -33,3 +33,34 @@ export const getRandomInteger = (min, max) => {
 export const getRandomDate = (days) => {
   return Date.now() + (getRandomInteger(0, (days * 24))) * TIME_IN_MS / 24;
 };
+
+export const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+  return newElement.firstChild;
+};
+
+export const render = (container, element) => {
+  container.append(element);
+};
+
+export const remove = (element) => {
+  if (element) {
+    element.remove();
+  }
+};
+export const formatDate = (date) => {
+  let dd = date.getDate();
+  if (dd < 10) {
+    dd = `0` + dd;
+  }
+  let mm = date.getMonth() + 1;
+  if (mm < 10) {
+    mm = `0` + mm;
+  }
+  let yy = date.getFullYear() % 100;
+  if (yy < 10) {
+    yy = `0` + yy;
+  }
+  return dd + `.` + mm + `.` + yy;
+};
