@@ -1,6 +1,17 @@
-import {createElement} from "./../util.js";
-export default class Event {
-  constructor({type, city, price, start, end, hours, minutes, offers}) {
+import AbstractComponent from "./abstract-component.js";
+const OFFERS_COUNT = 3;
+export default class Event extends AbstractComponent {
+  constructor({
+    type,
+    city,
+    price,
+    start,
+    end,
+    hours,
+    minutes,
+    offers
+  }) {
+    super();
     this._type = type;
     this._city = city;
     this._price = price;
@@ -9,18 +20,6 @@ export default class Event {
     this._hours = hours;
     this._minutes = minutes;
     this._offers = offers;
-    this._element = null;
-  }
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-  removeElement() {
-    if (this._element) {
-      this._element = null;
-    }
   }
 
   getTemplate() {
@@ -46,7 +45,7 @@ export default class Event {
 
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-      ${Array.from(this._offers).slice(0, 3).map((offer) => `<li class="event__offer">
+      ${Array.from(this._offers).slice(0, OFFERS_COUNT).map((offer) => `<li class="event__offer">
       <span class="event__offer-title">${offer.option}</span>
       &plus;
       &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
