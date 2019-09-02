@@ -1,16 +1,18 @@
 import Event from './components/event.js';
 import EventEdit from './components/event-edit.js';
 import {
-  OPTIONS
+  OPTIONS,
+  TYPES_OF_EVENT
 } from "./data.js";
 
 export default class TripController {
-  constructor(eventData, container, onDataChange) {
+  constructor(eventData, container, onDataChange, onChangeView) {
     this._container = container;
     this._eventData = eventData;
     this._event = new Event(eventData);
     this._eventEdit = new EventEdit(eventData);
     this._onDataChange = onDataChange;
+    this._onChangeView = onChangeView;
     this.create();
   }
 
@@ -25,7 +27,9 @@ export default class TripController {
     };
 
     this._event.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+      this._onChangeView();
       this._container.replaceChild(this._eventEdit.getElement(), this._event.getElement());
+
       document.addEventListener(`keydown`, onEscKeydown);
     });
     this._eventEdit.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
@@ -37,7 +41,7 @@ export default class TripController {
       evt.preventDefault();
       const formData = new FormData(this._eventEdit.getElement().querySelector(`.event--edit`));
       const entry = {
-        type: formData.get(`event-type`),
+        type: TYPES_OF_EVENT[TYPES_OF_EVENT.findIndex((it) => it.type === formData.get(`event-type`))],
         city: formData.get(`event-destination`),
         price: formData.get(`event-price`),
         start: new Date(formData.get(`event-start-time`)),
@@ -55,7 +59,9 @@ export default class TripController {
       document.removeEventListener(`keydown`, onEscKeydown);
     });
   }
-
-
-
+  setDefaultView() {
+    if (this._container.contains(this._eventEdit.getElement())) {
+      this._container.replaceChild(this._event.getElement(), this._eventEdit.getElement());
+    }
+  }
 }

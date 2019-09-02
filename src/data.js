@@ -38,24 +38,6 @@ export const DESTINATIONS = [{
   urls: Array.from(new Set(getArray(1, 5))),
 }];
 const DAYS_COUNT = 5;
-
-export const TYPES_OF_TRANSFER = [
-  `Bus to`,
-  `Drive to`,
-  `Flight to`,
-  `Ship to`,
-  `Taxi to`,
-  `Train to`,
-  `Transport to`,
-];
-export const TYPES_OF_ACTIVITY = [
-  `Check-in in`,
-  `Restaurant in`,
-  `Sightseeing in`,
-];
-const TYPES_OF_EVENT = TYPES_OF_TRANSFER.concat(TYPES_OF_ACTIVITY);
-
-
 export const OPTIONS = [{
   id: `luggage`,
   option: `Add luggage`,
@@ -77,6 +59,61 @@ export const OPTIONS = [{
   price: 9
 },
 ];
+export const TYPES_OF_TRANSFER = [
+  {
+    title: `Bus to`,
+    type: `bus`,
+    options: new Set(getRandomArray(1, 4, OPTIONS)),
+  },
+  {
+    title: `Drive to`,
+    type: `drive`,
+    options: new Set(getRandomArray(1, 4, OPTIONS)),
+  },
+  {
+    title: `Flight to`,
+    type: `flight`,
+    options: new Set(getRandomArray(1, 4, OPTIONS)),
+  },
+  {
+    title: `Ship to`,
+    type: `ship`,
+    options: new Set(getRandomArray(1, 4, OPTIONS)),
+  },
+  {
+    title: `Taxi to`,
+    type: `taxi`,
+    options: new Set(getRandomArray(1, 4, OPTIONS)),
+  },
+  {
+    title: `Train to`,
+    type: `train`,
+    options: new Set(getRandomArray(1, 4, OPTIONS)),
+  },
+  {
+    title: `Transport to`,
+    type: `transport`,
+    options: new Set(getRandomArray(1, 4, OPTIONS)),
+  },
+];
+export const TYPES_OF_ACTIVITY = [
+  {
+    title: `Check-in in`,
+    type: `check-in`,
+    options: new Set(getRandomArray(1, 4, OPTIONS)),
+  },
+  {
+    title: `Restaurant in`,
+    type: `restaurant`,
+    options: new Set(getRandomArray(1, 4, OPTIONS)),
+  },
+  {
+    title: `Sightseeing in`,
+    type: `sightseeing`,
+    options: new Set(getRandomArray(1, 4, OPTIONS)),
+  },
+];
+export const TYPES_OF_EVENT = TYPES_OF_TRANSFER.concat(TYPES_OF_ACTIVITY);
 
 // описание одного эвента
 
@@ -92,7 +129,7 @@ const getEvent = () => {
     price: getRandomInteger(0, 1000),
     start,
     end,
-    offers: new Set(getRandomArray(1, 4, OPTIONS)),
+    offers: type.options,
     isFavorite: false,
   };
 

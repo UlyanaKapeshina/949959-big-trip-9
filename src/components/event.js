@@ -26,9 +26,9 @@ export default class Event extends AbstractComponent {
     return `<li class="trip-events__item">
     <div class="event">
       <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="img/icons/${this._type.split(` `)[0].toLowerCase()}.png" alt="Event type icon">
+        <img class="event__type-icon" width="42" height="42" src="img/icons/${this._type.type}.png" alt="Event type icon">
       </div>
-      <h3 class="event__title">${this._type} ${this._city}</h3>
+      <h3 class="event__title">${this._type.title} ${this._city}</h3>
 
       <div class="event__schedule">
         <p class="event__time">
