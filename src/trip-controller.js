@@ -1,7 +1,7 @@
 import Day from './components/day.js';
-import Event from './components/event.js';
-import EventEdit from './components/event-edit.js';
+
 import Sort from './components/sort.js';
+import EventController from './event-controller';
 import SortContainer from './components/sort-container';
 
 export default class TripController {
@@ -65,31 +65,19 @@ export default class TripController {
       this._renderEvent(eventData, eventsList);
     });
   }
-
-  _renderEvent(eventData, container) {
-    const event = new Event(eventData);
-    const eventEdit = new EventEdit(eventData);
-    container.append(event.getElement());
-
-    const onEscKeydown = (evt) => {
-      if (evt.key === `Esc` || evt.key === `Escape`) {
-        container.replaceChild(event.getElement(), eventEdit.getElement());
-        document.removeEventListener(`keydown`, onEscKeydown);
-      }
-    };
-
-    event.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
-      container.replaceChild(eventEdit.getElement(), event.getElement());
-      document.addEventListener(`keydown`, onEscKeydown);
+  _renderEvent(eventData, eventsList) {
+    new EventController(eventData, eventsList, this._onDataChange);
+  }
+  _onDataChange(newData, oldData) {
+    this._datesData.forEach((date) => {
+      const eventsInDayData = this._eventsData[date];
+      eventsInDayData[eventsInDayData.findIndex((it) => it === oldData)] = newData;
     });
-    eventEdit.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
-      container.replaceChild(event.getElement(), eventEdit.getElement());
-      document.removeEventListener(`keydown`, onEscKeydown);
-    });
-
-    eventEdit.getElement().querySelector(`.event--edit`).addEventListener(`submit`, () => {
-      container.replaceChild(event.getElement(), eventEdit.getElement());
-      document.removeEventListener(`keydown`, onEscKeydown);
-    });
+    // this._datesData.forEach((date, index) => {
+    //   const day = this._renderDay(date, index, this._container);
+    //   const eventsInDayData = this._eventsData[date];
+    //   const eventsList = day.querySelector(`.trip-events__list`);
+    //   this._renderEvents(eventsInDayData, eventsList);
+    // });
   }
 }

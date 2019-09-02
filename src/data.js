@@ -13,7 +13,30 @@ import {
 import {
   getRandomDate
 } from "./util.js";
-export const CITIES = [`London`, `Liverpool`, `Birmingham`, `Oxford`, `Cambridge`, `Manchester`, `Nottingham`, `Sheffield`, `Leeds`, `Bristol`, `Newcastle`];
+const DESCRIPTIONS = [`Lorem ipsum dolor sit amet, consectetur adipiscing elit.`, `Cras aliquet varius magna, non porta ligula feugiat eget.`, `Fusce tristique felis at fermentum pharetra.`, `Aliquam id orci ut lectus varius viverra.`, `Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.`, `Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.`, `Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.`, `Sed sed nisi sed augue convallis suscipit in sed felis.`, `Aliquam erat volutpat.`, `Nunc fermentum tortor ac porta dapibus.`, `In rutrum ac purus sit amet tempus.`];
+export const DESTINATIONS = [{
+  city: `Birmingham`,
+  description: Array.from(new Set(getRandomArray(1, 3, DESCRIPTIONS))).join(``),
+  urls: Array.from(new Set(getArray(1, 5))),
+},
+{
+  city: `Nottingham`,
+  description: Array.from(new Set(getRandomArray(1, 3, DESCRIPTIONS))).join(``),
+  urls: Array.from(new Set(getArray(1, 5))),
+}, {
+  city: `Sheffield`,
+  description: Array.from(new Set(getRandomArray(1, 3, DESCRIPTIONS))).join(``),
+  urls: Array.from(new Set(getArray(1, 5))),
+},
+{
+  city: `Bristol`,
+  description: Array.from(new Set(getRandomArray(1, 3, DESCRIPTIONS))).join(``),
+  urls: Array.from(new Set(getArray(1, 5))),
+}, {
+  city: `Newcastle`,
+  description: Array.from(new Set(getRandomArray(1, 3, DESCRIPTIONS))).join(``),
+  urls: Array.from(new Set(getArray(1, 5))),
+}];
 const DAYS_COUNT = 5;
 
 export const TYPES_OF_TRANSFER = [
@@ -32,7 +55,6 @@ export const TYPES_OF_ACTIVITY = [
 ];
 const TYPES_OF_EVENT = TYPES_OF_TRANSFER.concat(TYPES_OF_ACTIVITY);
 
-const DESCRIPTIONS = [`Lorem ipsum dolor sit amet, consectetur adipiscing elit.`, `Cras aliquet varius magna, non porta ligula feugiat eget.`, `Fusce tristique felis at fermentum pharetra.`, `Aliquam id orci ut lectus varius viverra.`, `Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.`, `Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.`, `Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.`, `Sed sed nisi sed augue convallis suscipit in sed felis.`, `Aliquam erat volutpat.`, `Nunc fermentum tortor ac porta dapibus.`, `In rutrum ac purus sit amet tempus.`];
 
 export const OPTIONS = [{
   id: `luggage`,
@@ -63,21 +85,15 @@ const getEvent = () => {
   const start = getRandomDate(DAYS_COUNT);
   const residual = getRandomInteger(20, 180) * 60 * 1000;
   const end = start + residual;
-  const residualInHours = residual / 1000 / 60 / 60;
-  const hours = Math.trunc(residualInHours);
-  const minutes = Math.trunc((residualInHours - hours) * 60);
+
   return {
-    date: `${new Date(start)}`.slice(4, 10),
     type,
-    city: getRandomElement(CITIES),
+    city: getRandomElement(DESTINATIONS).city,
     price: getRandomInteger(0, 1000),
-    description: Array.from(new Set(getRandomArray(1, 3, DESCRIPTIONS))).join(``),
     start,
     end,
-    hours,
-    minutes,
     offers: new Set(getRandomArray(1, 4, OPTIONS)),
-    urls: Array.from(new Set(getArray(0, 5))),
+    isFavorite: false,
   };
 
 };

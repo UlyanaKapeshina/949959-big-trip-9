@@ -4,7 +4,7 @@ import {
 import {
   TYPES_OF_TRANSFER,
   TYPES_OF_ACTIVITY,
-  CITIES,
+  DESTINATIONS,
   OPTIONS
 } from "./../data.js";
 import AbstractComponent from "./abstract-component.js";
@@ -14,28 +14,28 @@ export default class EventEdit extends AbstractComponent {
     type,
     city,
     price,
-    description,
     start,
     end,
     offers,
-    urls
+    isFavorite
   }) {
     super();
     this._type = type;
     this._city = city;
     this._price = price;
-    this._description = description;
-    this._start = formatDate(new Date(start));
-    this._end = formatDate(new Date(end));
+
+    this._start = new Date(start).toDateString();
+    this._end = new Date(end).toDateString();
     this._startTime = new Date(start).toTimeString().slice(0, 5);
     this._endTime = new Date(end).toTimeString().slice(0, 5);
     this._offers = offers;
-    this._urls = urls;
+
+    this._isFavorite = isFavorite;
   }
 
   getTemplate() {
     return `<li class="trip-events__item">
-    <form class="event  event--edit" action="#" method="post">
+    <form class="event  event--edit"  method="post" action="https://echo.htmlacademy.ru" enctype="multipart/form-data" autocomplete="off">
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -48,14 +48,14 @@ export default class EventEdit extends AbstractComponent {
           <fieldset class="event__type-group">
           <legend class="visually-hidden">Transfer</legend>
           ${TYPES_OF_TRANSFER.map((transferType) => `<div class="event__type-item">
-          <input id="event-type-${transferType.split(` `)[0].toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${transferType.split(` `)[0].toLowerCase()}">
+          <input id="event-type-${transferType.split(` `)[0].toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${transferType.split(` `)[0].toLowerCase()}" ${transferType === this._type ? `checked` : ``}>
           <label class="event__type-label  event__type-label--${transferType.split(` `)[0].toLowerCase()}" for="event-type-${transferType.split(` `)[0].toLowerCase()}-1">${transferType.split(` `)[0]}</label>
         </div>`).join(``)}
         </fieldset>
         <fieldset class="event__type-group">
           <legend class="visually-hidden">Activity</legend>
           ${TYPES_OF_ACTIVITY.map((activityType) => `<div class="event__type-item">
-          <input id="event-type-${activityType.split(` `)[0].toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${activityType.split(` `)[0].toLowerCase()}">
+          <input id="event-type-${activityType.split(` `)[0].toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${activityType.split(` `)[0].toLowerCase()}"${activityType === this._type ? `checked` : ``}>
           <label class="event__type-label  event__type-label--${activityType.split(` `)[0].toLowerCase()}" for="event-type-${activityType.split(` `)[0].toLowerCase()}-1">${activityType.split(` `)[0]}</label>
         </div>`).join(``)}
         </fieldset>
@@ -68,7 +68,7 @@ export default class EventEdit extends AbstractComponent {
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._city}" list="destination-list-1">
         <datalist id="destination-list-1">
-          ${CITIES.map((CITY) => `<option value="${CITY}"></option>`)}
+          ${DESTINATIONS.map((DESTINATION) => `<option value="${DESTINATION.city}"></option>`)}
         </datalist>
       </div>
 
@@ -95,7 +95,7 @@ export default class EventEdit extends AbstractComponent {
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         <button class="event__reset-btn" type="reset">Delete</button>
 
-        <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
+        <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${this._isFavorite ? `checked` : ``}>
         <label class="event__favorite-btn" for="event-favorite-1">
           <span class="visually-hidden">Add to favorite</span>
           <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -126,11 +126,12 @@ export default class EventEdit extends AbstractComponent {
 
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${this._description}</p>
+          <p class="event__destination-description">${DESTINATIONS.filter((DESTINATION) => DESTINATION.city === this._city).map((DESTINATION) => DESTINATION.description)}</p>
 
           <div class="event__photos-container">
             <div class="event__photos-tape">
-            ${this._urls.map((url) => `<img class="event__photo" src=${url} alt="Event photo">`).join(``)}
+
+            ${DESTINATIONS.filter((DESTINATION) => DESTINATION.city === this._city).map((DESTINATION) => DESTINATION.urls.map((url) => `<img class="event__photo" src=${url} alt="Event photo">`).join(``))}
             </div>
           </div>
         </section>

@@ -7,8 +7,6 @@ export default class Event extends AbstractComponent {
     price,
     start,
     end,
-    hours,
-    minutes,
     offers
   }) {
     super();
@@ -17,9 +15,11 @@ export default class Event extends AbstractComponent {
     this._price = price;
     this._start = new Date(start);
     this._end = new Date(end);
-    this._hours = hours;
-    this._minutes = minutes;
+
     this._offers = offers;
+
+    this._hours = Math.trunc((end - start) / 1000 / 60 / 60);
+    this._minutes = Math.trunc(((end - start) / 1000 / 60 / 60 - this._hours) * 60);
   }
 
   getTemplate() {
