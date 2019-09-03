@@ -6,6 +6,9 @@ import {
   OPTIONS
 } from "./../data.js";
 import AbstractComponent from "./abstract-component.js";
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+import 'flatpickr/dist/themes/light.css';
 
 export default class EventEdit extends AbstractComponent {
   constructor({
@@ -22,8 +25,8 @@ export default class EventEdit extends AbstractComponent {
     this._city = city;
     this._price = price;
 
-    this._start = new Date(start).toDateString();
-    this._end = new Date(end).toDateString();
+    this._start = new Date(start);
+    this._end = new Date(end);
     this._startTime = new Date(start).toTimeString().slice(0, 5);
     this._endTime = new Date(end).toTimeString().slice(0, 5);
     this._offers = offers;
@@ -31,6 +34,25 @@ export default class EventEdit extends AbstractComponent {
     this._isFavorite = isFavorite;
     this._subscribeOnTypeChange();
     this._subscribeOnCityChange();
+    this._getDate();
+  }
+  _getDate() {
+    flatpickr((this.getElement().querySelector(`#event-start-time-1`)), {
+      altInput: true,
+      allowInput: true,
+      defaultDate: this._start,
+      altFormat: `d.m.y H:i`,
+      dateFormat: `d.m.y H:i`,
+      enableTime: true
+    });
+    flatpickr((this.getElement().querySelector(`#event-end-time-1`)), {
+      altInput: true,
+      // allowInput: true,
+      defaultDate: this._end,
+      altFormat: `d.m.y H:i`,
+      enableTime: true
+    });
+
   }
   _subscribeOnTypeChange() {
     const label = this.getElement().querySelector(`.event__type-output`);
