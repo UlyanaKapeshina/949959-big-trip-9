@@ -59,13 +59,19 @@ export default class EventEdit extends AbstractComponent {
   _subscribeOnCityChange() {
     const onCityChange = (evt) => {
       const description = this.getElement().querySelector(`.event__destination-description`);
+      const photosContainer = this.getElement().querySelector(`.event__photos-tape`);
       const newType = DESTINATIONS[DESTINATIONS.findIndex((it) => it.city === evt.target.value)];
       description.textContent = newType.description;
+      photosContainer.innerHTML = this._getPhotos(newType);
+
 
     };
     this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, onCityChange);
   }
 
+  _getPhotos(newType) {
+    return newType.urls.map((it) => `<img class="event__photo" src=${it} alt="Event photo">`).join(``);
+  }
   getTemplate() {
     return `<li class="trip-events__item">
     <form class="event  event--edit"  method="post" action="https://echo.htmlacademy.ru" enctype="multipart/form-data" autocomplete="off">

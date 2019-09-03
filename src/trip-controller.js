@@ -80,10 +80,6 @@ export default class TripController {
   }
   _onDataChange(newData, oldData) {
     this._eventsData[this._eventsData.findIndex((it) => it === oldData)] = newData;
-    // this._datesData.forEach((date) => {
-    //   const eventsInDayData = this._eventsData[date];
-    //   eventsInDayData[eventsInDayData.findIndex((it) => it === oldData)] = newData;
-    // });
     this._renderDaysList();
   }
   _onChangeView() {

@@ -21,6 +21,7 @@ export default class EventController {
 
     const onEscKeydown = (evt) => {
       if (evt.key === `Esc` || evt.key === `Escape`) {
+        evt.preventDefault();
         this._container.replaceChild(this._event.getElement(), this._eventEdit.getElement());
         document.removeEventListener(`keydown`, onEscKeydown);
       }
