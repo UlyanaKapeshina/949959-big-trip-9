@@ -60,10 +60,11 @@ export default class EventEdit extends AbstractComponent {
     const onCityChange = (evt) => {
       const description = this.getElement().querySelector(`.event__destination-description`);
       const photosContainer = this.getElement().querySelector(`.event__photos-tape`);
-      const newType = DESTINATIONS[DESTINATIONS.findIndex((it) => it.city === evt.target.value)];
-      description.textContent = newType.description;
-      photosContainer.innerHTML = this._getPhotos(newType);
-
+      if (evt.target.value) {
+        const newType = DESTINATIONS[DESTINATIONS.findIndex((it) => it.city === evt.target.value)];
+        description.textContent = newType.description;
+        photosContainer.innerHTML = this._getPhotos(newType);
+      }
 
     };
     this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, onCityChange);
