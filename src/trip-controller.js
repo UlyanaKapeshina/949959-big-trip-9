@@ -1,25 +1,26 @@
 import Day from './components/day.js';
-import Event from './components/event.js';
-import EventEdit from './components/event-edit.js';
+import DaysList from './components/days-list.js';
+
 import Sort from './components/sort.js';
+import EventController from './event-controller';
 import SortContainer from './components/sort-container';
+import {remove} from './util.js';
+import {getEventsInDays} from './util.js';
+
 
 export default class TripController {
-  constructor(container, eventsData, events) {
+  constructor(container, eventsData) {
     this._container = container;
     this._eventsData = eventsData;
-    this._events = events;
-    this._datesData = Object.keys(eventsData);
     this._sort = new Sort();
+    this._daysList = new DaysList();
     this._sortContainer = new SortContainer();
+    this._onDataChange = this._onDataChange.bind(this);
+    this._subscriptions = [];
+    this._onChangeView = this._onChangeView.bind(this);
   }
   init() {
-    this._datesData.forEach((date, index) => {
-      const day = this._renderDay(date, index, this._container);
-      const eventsInDayData = this._eventsData[date];
-      const eventsList = day.querySelector(`.trip-events__list`);
-      this._renderEvents(eventsInDayData, eventsList);
-    });
+    this._renderDaysList();
     const tripEvents = document.querySelector(`.trip-events`);
     tripEvents.querySelector(`h2`).after(this._sort.getElement());
     this._sort.getElement().addEventListener(`click`, (evt) => this._onSortClick(evt));
@@ -28,29 +29,37 @@ export default class TripController {
     if (evt.target.tagName !== `LABEL`) {
       return;
     }
-    this._container.innerHTML = ``;
-    this._container.append(this._sortContainer.getElement());
+    this._daysList.getElement().innerHTML = ``;
+    this._daysList.getElement().append(this._sortContainer.getElement());
     const eventsListSort = this._sortContainer.getElement().querySelector(`.trip-events__list`);
     eventsListSort.innerHTML = ``;
     switch (evt.target.dataset.sortType) {
       case `price`:
-        const sortByPrice = this._events.slice().sort((a, b) => b.price - a.price);
+        const sortByPrice = this._eventsData.slice().sort((a, b) => b.price - a.price);
         this._renderEvents(sortByPrice, eventsListSort);
         break;
       case `time`:
-        const sortByTime = this._events.slice().sort((a, b) => (a.start - a.end) - (b.start - b.end));
+        const sortByTime = this._eventsData.slice().sort((a, b) => (a.start - a.end) - (b.start - b.end));
         this._renderEvents(sortByTime, eventsListSort);
         break;
       case `default`:
-        this._container.innerHTML = ``;
-        this._datesData.forEach((date, index) => {
-          const day = this._renderDay(date, index, this._container);
-          const eventsInDayData = this._eventsData[date];
-          const eventsList = day.querySelector(`.trip-events__list`);
-          this._renderEvents(eventsInDayData, eventsList);
-        });
+        this._renderDaysList();
         break;
     }
+  }
+  _renderDaysList() {
+    remove(this._daysList.getElement());
+    this._daysList.removeElement();
+    this._container.append(this._daysList.getElement());
+    const eventsInDays = getEventsInDays(this._eventsData.sort((a, b) => a.start - b.start));
+
+    const datesData = Object.keys(eventsInDays);
+    datesData.forEach((date, index) => {
+      const day = this._renderDay(date, index, this._daysList.getElement());
+      const eventsInDayData = eventsInDays[date];
+      const eventsListContainer = day.querySelector(`.trip-events__list`);
+      this._renderEvents(eventsInDayData, eventsListContainer);
+    });
   }
 
   _renderDay(date, index, daysListElement) {
@@ -60,36 +69,20 @@ export default class TripController {
     return dayElement;
   }
 
-  _renderEvents(eventsInDayData, eventsList) {
+  _renderEvents(eventsInDayData, eventsListContainer) {
     eventsInDayData.map((eventData) => {
-      this._renderEvent(eventData, eventsList);
+      this._renderEvent(eventData, eventsListContainer);
     });
   }
-
-  _renderEvent(eventData, container) {
-    const event = new Event(eventData);
-    const eventEdit = new EventEdit(eventData);
-    container.append(event.getElement());
-
-    const onEscKeydown = (evt) => {
-      if (evt.key === `Esc` || evt.key === `Escape`) {
-        container.replaceChild(event.getElement(), eventEdit.getElement());
-        document.removeEventListener(`keydown`, onEscKeydown);
-      }
-    };
-
-    event.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
-      container.replaceChild(eventEdit.getElement(), event.getElement());
-      document.addEventListener(`keydown`, onEscKeydown);
-    });
-    eventEdit.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
-      container.replaceChild(event.getElement(), eventEdit.getElement());
-      document.removeEventListener(`keydown`, onEscKeydown);
-    });
-
-    eventEdit.getElement().querySelector(`.event--edit`).addEventListener(`submit`, () => {
-      container.replaceChild(event.getElement(), eventEdit.getElement());
-      document.removeEventListener(`keydown`, onEscKeydown);
-    });
+  _renderEvent(eventData, eventsListContainer) {
+    const eventController = new EventController(eventData, eventsListContainer, this._onDataChange, this._onChangeView);
+    this._subscriptions.push(eventController.setDefaultView.bind(eventController));
+  }
+  _onDataChange(newData, oldData) {
+    this._eventsData[this._eventsData.findIndex((it) => it === oldData)] = newData;
+    this._renderDaysList();
+  }
+  _onChangeView() {
+    this._subscriptions.forEach((subscription) => subscription());
   }
 }

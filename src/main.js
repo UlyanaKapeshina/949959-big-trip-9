@@ -3,7 +3,6 @@ import Menu from './components/menu.js';
 import Filters from './components/filters.js';
 import TripInfo from './components/trip-info.js';
 import EventAdd from './components/event-add.js';
-import DaysList from './components/days-list.js';
 import TripController from './trip-controller.js';
 import {
   getEventsData,
@@ -11,7 +10,7 @@ import {
   filtersNames,
   getPrice,
   getCities,
-  getEventsInDays
+
 } from "./data.js";
 
 const tripControls = document.querySelector(`.trip-controls`);
@@ -20,7 +19,7 @@ const tripInfo = document.querySelector(`.trip-main__trip-info`);
 const addButton = document.querySelector(`.trip-main__event-add-btn`);
 const eventsData = getEventsData(EVENT_COUNT);
 const tripCities = getCities(eventsData);
-const eventsInDays = getEventsInDays(eventsData);
+
 const price = getPrice(eventsData);
 const tripInfoCost = document.querySelector(`.trip-info__cost`).querySelector(`span`);
 
@@ -33,11 +32,7 @@ const renderFilters = () => {
   const filters = new Filters(filtersNames);
   tripControls.append(filters.getElement());
 };
-const renderDaysList = () => {
-  const daysList = new DaysList();
-  tripEvents.append(daysList.getElement());
-  return daysList.getElement();
-};
+
 const renderTripInfo = () => {
   const info = new TripInfo(tripCities, eventsData);
   tripInfo.prepend(info.getElement());
@@ -55,8 +50,7 @@ renderFilters();
 
 if (eventsData.length > 0) {
   renderTripInfo();
-  const daysList = renderDaysList();
-  const tripController = new TripController(daysList, eventsInDays, eventsData);
+  const tripController = new TripController(tripEvents, eventsData);
   tripController.init();
 } else {
   renderEventAdd();
