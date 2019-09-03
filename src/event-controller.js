@@ -5,7 +5,7 @@ import {
   TYPES_OF_EVENT
 } from "./data.js";
 
-export default class TripController {
+export default class EventController {
   constructor(eventData, container, onDataChange, onChangeView) {
     this._container = container;
     this._eventData = eventData;
@@ -41,21 +41,17 @@ export default class TripController {
       evt.preventDefault();
       const formData = new FormData(this._eventEdit.getElement().querySelector(`.event--edit`));
       const entry = {
-        type: TYPES_OF_EVENT[TYPES_OF_EVENT.findIndex((it) => it.type === formData.get(`event-type`))],
+        type: TYPES_OF_EVENT.find((it) => it.type === formData.get(`event-type`)),
         city: formData.get(`event-destination`),
         price: formData.get(`event-price`),
         start: new Date(formData.get(`event-start-time`)),
         end: new Date(formData.get(`event-end-time`)),
         offers: OPTIONS.filter((option) => {
-          return formData.get(`event-offer-${option.id}`);
+          return formData.has(`event-offer-${option.id}`);
         }),
         isFavorite: formData.get(`event-favorite`) === `on` ? true : false,
       };
       this._onDataChange(entry, this._eventData);
-
-      // this._eventsData[this._eventsData.findIndex((it) => it === eventData)] = entry;
-
-      // container.replaceChild(event.getElement(), eventEdit.getElement());
       document.removeEventListener(`keydown`, onEscKeydown);
     });
   }

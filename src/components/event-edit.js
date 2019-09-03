@@ -29,38 +29,39 @@ export default class EventEdit extends AbstractComponent {
     this._offers = offers;
 
     this._isFavorite = isFavorite;
-    this.changeType();
+    this._subscribeOnTypeChange();
+    this._subscribeOnCityChange();
   }
-  changeType() {
+  _subscribeOnTypeChange() {
     const label = this.getElement().querySelector(`.event__type-output`);
     const img = this.getElement().querySelector(`.event__type-icon`);
     const offersContainer = this.getElement().querySelector(`.event__available-offers`);
     const onTypeChange = (evt) => {
-      if (evt.target.tagName === `INPUT`) {
-        const newType = TYPES_OF_EVENT[TYPES_OF_EVENT.findIndex((it) => it.type === evt.target.value)];
-        label.textContent = newType.title;
-        img.src = `img/icons/${ newType.type}.png`;
-        offersContainer.innerHTML = Array.from(newType.options).map((option) => {
-          return `<div class="event__offer-selector">
-              <input class="event__offer-checkbox  visually-hidden" id="event-offer-${option.id}-1" type="checkbox" name="event-offer-${option.id}">
-              <label class="event__offer-label" for="event-offer-${option.id}-1">
-                <span class="event__offer-title">${option.option}</span>
-                &plus;
-                &euro;&nbsp;<span class="event__offer-price">${option.price}</span>
-              </label>
-            </div>`;
-        }).join(``);
-        // this.getElement().querySelector(`.event__type-list`).removeEventListener(`change`, onTypeChange);
-      }
+      const newType = TYPES_OF_EVENT.find((type) => type.type === evt.target.value);
+      label.textContent = newType.title;
+      img.src = `img/icons/${newType.type}.png`;
+      offersContainer.innerHTML = this._getOffers(newType);
     };
     this.getElement().querySelector(`.event__type-list`).addEventListener(`change`, onTypeChange);
   }
-  changeCity() {
+  _getOffers(newType) {
+    return Array.from(newType.options).map((option) => {
+      return `<div class="event__offer-selector">
+            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${option.id}-1" type="checkbox" name="event-offer-${option.id}">
+            <label class="event__offer-label" for="event-offer-${option.id}-1">
+              <span class="event__offer-title">${option.option}</span>
+              &plus;
+              &euro;&nbsp;<span class="event__offer-price">${option.price}</span>
+            </label>
+          </div>`;
+    }).join(``);
+  }
+  _subscribeOnCityChange() {
     const onCityChange = (evt) => {
       const description = this.getElement().querySelector(`.event__destination-description`);
       const newType = DESTINATIONS[DESTINATIONS.findIndex((it) => it.city === evt.target.value)];
       description.textContent = newType.description;
-      this.getElement().querySelector(`.event__type-list`).removeEventListener(`change`, onCityChange);
+
     };
     this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, onCityChange);
   }
@@ -100,7 +101,7 @@ export default class EventEdit extends AbstractComponent {
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._city}" list="destination-list-1">
         <datalist id="destination-list-1">
-          ${DESTINATIONS.map((DESTINATION) => `<option value="${DESTINATION.city}"></option>`).join(``)}
+          ${DESTINATIONS.map((destination) => `<option value="${destination.city}"></option>`).join(``)}
         </datalist>
       </div>
 
@@ -158,12 +159,12 @@ export default class EventEdit extends AbstractComponent {
 
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${DESTINATIONS.filter((DESTINATION) => DESTINATION.city === this._city).map((DESTINATION) => DESTINATION.description)}</p>
+          <p class="event__destination-description">${DESTINATIONS.find((destination) => destination.city === this._city).description}</p>
 
           <div class="event__photos-container">
             <div class="event__photos-tape">
 
-            ${DESTINATIONS.filter((DESTINATION) => DESTINATION.city === this._city).map((DESTINATION) => DESTINATION.urls.map((url) => `<img class="event__photo" src=${url} alt="Event photo">`).join(``))}
+            ${DESTINATIONS.filter((destination) => destination.city === this._city).map((destination) => destination.urls.map((url) => `<img class="event__photo" src=${url} alt="Event photo">`).join(``))}
             </div>
           </div>
         </section>

@@ -54,8 +54,8 @@ export default class TripController {
     this._datesData.forEach((date, index) => {
       const day = this._renderDay(date, index, this._daysList.getElement());
       const eventsInDayData = this._eventsData[date];
-      const eventsList = day.querySelector(`.trip-events__list`);
-      this._renderEvents(eventsInDayData, eventsList);
+      const eventsListContainer = day.querySelector(`.trip-events__list`);
+      this._renderEvents(eventsInDayData, eventsListContainer);
     });
   }
 
@@ -66,13 +66,13 @@ export default class TripController {
     return dayElement;
   }
 
-  _renderEvents(eventsInDayData, eventsList) {
+  _renderEvents(eventsInDayData, eventsListContainer) {
     eventsInDayData.map((eventData) => {
-      this._renderEvent(eventData, eventsList);
+      this._renderEvent(eventData, eventsListContainer);
     });
   }
-  _renderEvent(eventData, eventsList) {
-    const eventController = new EventController(eventData, eventsList, this._onDataChange, this._onChangeView);
+  _renderEvent(eventData, eventsListContainer) {
+    const eventController = new EventController(eventData, eventsListContainer, this._onDataChange, this._onChangeView);
     this._subscriptions.push(eventController.setDefaultView.bind(eventController));
   }
   _onDataChange(newData, oldData) {

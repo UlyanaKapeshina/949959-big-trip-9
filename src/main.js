@@ -1,4 +1,4 @@
-const EVENT_COUNT = 16;
+const EVENT_COUNT = 3;
 import Menu from './components/menu.js';
 import Filters from './components/filters.js';
 import TripInfo from './components/trip-info.js';
