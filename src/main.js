@@ -1,4 +1,4 @@
-const EVENT_COUNT = 3;
+const EVENT_COUNT = 16;
 import Menu from './components/menu.js';
 import Filters from './components/filters.js';
 import TripInfo from './components/trip-info.js';
@@ -10,7 +10,7 @@ import {
   filtersNames,
   getPrice,
   getCities,
-  getEventsInDays
+
 } from "./data.js";
 
 const tripControls = document.querySelector(`.trip-controls`);
@@ -19,7 +19,7 @@ const tripInfo = document.querySelector(`.trip-main__trip-info`);
 const addButton = document.querySelector(`.trip-main__event-add-btn`);
 const eventsData = getEventsData(EVENT_COUNT);
 const tripCities = getCities(eventsData);
-const eventsInDays = getEventsInDays(eventsData);
+
 const price = getPrice(eventsData);
 const tripInfoCost = document.querySelector(`.trip-info__cost`).querySelector(`span`);
 
@@ -50,7 +50,7 @@ renderFilters();
 
 if (eventsData.length > 0) {
   renderTripInfo();
-  const tripController = new TripController(tripEvents, eventsInDays, eventsData);
+  const tripController = new TripController(tripEvents, eventsData);
   tripController.init();
 } else {
   renderEventAdd();

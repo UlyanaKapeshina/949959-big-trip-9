@@ -5,13 +5,13 @@ import Sort from './components/sort.js';
 import EventController from './event-controller';
 import SortContainer from './components/sort-container';
 import {remove} from './util.js';
+import {getEventsInDays} from './util.js';
+
 
 export default class TripController {
-  constructor(container, eventsData, events) {
+  constructor(container, eventsData) {
     this._container = container;
     this._eventsData = eventsData;
-    this._events = events;
-    this._datesData = Object.keys(eventsData);
     this._sort = new Sort();
     this._daysList = new DaysList();
     this._sortContainer = new SortContainer();
@@ -35,11 +35,11 @@ export default class TripController {
     eventsListSort.innerHTML = ``;
     switch (evt.target.dataset.sortType) {
       case `price`:
-        const sortByPrice = this._events.slice().sort((a, b) => b.price - a.price);
+        const sortByPrice = this._eventsData.slice().sort((a, b) => b.price - a.price);
         this._renderEvents(sortByPrice, eventsListSort);
         break;
       case `time`:
-        const sortByTime = this._events.slice().sort((a, b) => (a.start - a.end) - (b.start - b.end));
+        const sortByTime = this._eventsData.slice().sort((a, b) => (a.start - a.end) - (b.start - b.end));
         this._renderEvents(sortByTime, eventsListSort);
         break;
       case `default`:
@@ -51,9 +51,12 @@ export default class TripController {
     remove(this._daysList.getElement());
     this._daysList.removeElement();
     this._container.append(this._daysList.getElement());
-    this._datesData.forEach((date, index) => {
+    const eventsInDays = getEventsInDays(this._eventsData.sort((a, b) => a.start - b.start));
+
+    const datesData = Object.keys(eventsInDays);
+    datesData.forEach((date, index) => {
       const day = this._renderDay(date, index, this._daysList.getElement());
-      const eventsInDayData = this._eventsData[date];
+      const eventsInDayData = eventsInDays[date];
       const eventsListContainer = day.querySelector(`.trip-events__list`);
       this._renderEvents(eventsInDayData, eventsListContainer);
     });
@@ -76,10 +79,11 @@ export default class TripController {
     this._subscriptions.push(eventController.setDefaultView.bind(eventController));
   }
   _onDataChange(newData, oldData) {
-    this._datesData.forEach((date) => {
-      const eventsInDayData = this._eventsData[date];
-      eventsInDayData[eventsInDayData.findIndex((it) => it === oldData)] = newData;
-    });
+    this._eventsData[this._eventsData.findIndex((it) => it === oldData)] = newData;
+    // this._datesData.forEach((date) => {
+    //   const eventsInDayData = this._eventsData[date];
+    //   eventsInDayData[eventsInDayData.findIndex((it) => it === oldData)] = newData;
+    // });
     this._renderDaysList();
   }
   _onChangeView() {
