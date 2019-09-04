@@ -41,15 +41,16 @@ export default class EventEdit extends AbstractComponent {
       altInput: true,
       allowInput: true,
       defaultDate: this._start,
-      altFormat: `d.m.y H:i`,
-      dateFormat: `d.m.y H:i`,
+      altFormat: `d.m.Y H:i`,
+      // dateFormat: `d.m.Y H:i`,
       enableTime: true
     });
     flatpickr((this.getElement().querySelector(`#event-end-time-1`)), {
       altInput: true,
-      // allowInput: true,
+      allowInput: true,
       defaultDate: this._end,
-      altFormat: `d.m.y H:i`,
+      altFormat: `d.m.Y H:i`,
+      // dateFormat: `d.m.Y H:i`,
       enableTime: true
     });
 
