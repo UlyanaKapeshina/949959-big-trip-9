@@ -9,8 +9,6 @@ import AbstractComponent from "./abstract-component.js";
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
-import moment from 'moment';
-
 export default class EventEdit extends AbstractComponent {
   constructor({
     type,
@@ -137,12 +135,12 @@ export default class EventEdit extends AbstractComponent {
       <label class="visually-hidden" for="event-start-time-1">
         From
       </label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${moment(this._start).format()}">
+      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="">
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">
         To
       </label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${moment(this._end).format()}">
+      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="">
     </div>
         <div class="event__field-group  event__field-group--price">
           <label class="event__label" for="event-price-1">
