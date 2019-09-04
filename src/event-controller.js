@@ -4,7 +4,9 @@ import {
   OPTIONS,
   TYPES_OF_EVENT
 } from "./data.js";
-
+// import flatpickr from 'flatpickr';
+// import 'flatpickr/dist/flatpickr.min.css';
+// import 'flatpickr/dist/themes/light.css';
 export default class EventController {
   constructor(eventData, container, onDataChange, onChangeView) {
     this._container = container;
@@ -17,6 +19,7 @@ export default class EventController {
   }
 
   create() {
+    // flatpickr((this._eventEdit.getElement().querySelector(`.event__input--time`)));
     this._container.append(this._event.getElement());
 
     const onEscKeydown = (evt) => {

@@ -1,5 +1,6 @@
 import AbstractComponent from "./abstract-component.js";
 const OFFERS_COUNT = 3;
+import moment from 'moment';
 export default class Event extends AbstractComponent {
   constructor({
     type,
@@ -21,6 +22,15 @@ export default class Event extends AbstractComponent {
     this._hours = Math.trunc((end - start) / 1000 / 60 / 60);
     this._minutes = Math.trunc(((end - start) / 1000 / 60 / 60 - this._hours) * 60);
   }
+  _getDuration(startTime, endTime) {
+    const start = moment(startTime);
+    const end = moment(endTime);
+    const duration = moment.duration(end.diff(start));
+    const hours = duration.hours();
+    const minutes = duration.minutes();
+    const days = duration.days();
+    return `${days ? `${days}D` : ``} ${hours ? `${hours}H` : ``} ${minutes}M`;
+  }
 
   getTemplate() {
     return `<li class="trip-events__item">
@@ -32,11 +42,11 @@ export default class Event extends AbstractComponent {
 
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="${this._start.toString().slice(4, 21)}">${this._start.toTimeString().slice(0, 5)}</time>
+          <time class="event__start-time" datetime="${moment(this._start).format()}">${moment(this._start).format(`h:mm`)}</time>
           &mdash;
-          <time class="event__end-time" datetime="${this._end.toString().slice(4, 21)}">${this._end.toTimeString().slice(0, 5)}</time>
+          <time class="event__end-time" datetime="${moment(this._end).format()}">${moment(this._end).format(`h:mm`)}</time>
         </p>
-        <p class="event__duration">${this._hours}H ${this._minutes}M</p>
+        <p class="event__duration">${this._getDuration(this._start, this._end)}</p>
       </div>
 
       <p class="event__price">
