@@ -9,6 +9,7 @@ import AbstractComponent from "./abstract-component.js";
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
+import moment from 'moment';
 
 export default class EventEdit extends AbstractComponent {
   constructor({
@@ -27,8 +28,6 @@ export default class EventEdit extends AbstractComponent {
 
     this._start = new Date(start);
     this._end = new Date(end);
-    this._startTime = new Date(start).toTimeString().slice(0, 5);
-    this._endTime = new Date(end).toTimeString().slice(0, 5);
     this._offers = offers;
 
     this._isFavorite = isFavorite;
@@ -42,7 +41,6 @@ export default class EventEdit extends AbstractComponent {
       allowInput: true,
       defaultDate: this._start,
       altFormat: `d.m.Y H:i`,
-      // dateFormat: `d.m.Y H:i`,
       enableTime: true
     });
     flatpickr((this.getElement().querySelector(`#event-end-time-1`)), {
@@ -50,7 +48,6 @@ export default class EventEdit extends AbstractComponent {
       allowInput: true,
       defaultDate: this._end,
       altFormat: `d.m.Y H:i`,
-      // dateFormat: `d.m.Y H:i`,
       enableTime: true
     });
 
@@ -140,12 +137,12 @@ export default class EventEdit extends AbstractComponent {
       <label class="visually-hidden" for="event-start-time-1">
         From
       </label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${this._start} ${this._startTime}">
+      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${moment(this._start).format()}">
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">
         To
       </label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${this._end} ${this._endTime}">
+      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${moment(this._end).format()}">
     </div>
         <div class="event__field-group  event__field-group--price">
           <label class="event__label" for="event-price-1">

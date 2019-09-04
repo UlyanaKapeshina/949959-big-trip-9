@@ -42,9 +42,9 @@ export default class Event extends AbstractComponent {
 
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="${moment(this._start).format(`YYYY-MM-DD`)}">${moment(this._start).format(`h:mm`)}</time>
+          <time class="event__start-time" datetime="${moment(this._start).format()}">${moment(this._start).format(`h:mm`)}</time>
           &mdash;
-          <time class="event__end-time" datetime="${moment(this._end).format(`YYYY-MM-DD`)}">${moment(this._end).format(`h:mm`)}</time>
+          <time class="event__end-time" datetime="${moment(this._end).format()}">${moment(this._end).format(`h:mm`)}</time>
         </p>
         <p class="event__duration">${this._getDuration(this._start, this._end)}</p>
       </div>
