@@ -2,11 +2,11 @@ const EVENT_COUNT = 16;
 import Menu from './components/menu.js';
 import Filters from './components/filters.js';
 import TripInfo from './components/trip-info.js';
-import EventAdd from './components/event-add.js';
+import Stats from './components/stats.js';
+import Message from './components/message.js';
 import TripController from './trip-controller.js';
 import {
   getEventsData,
-  menuValues,
   filtersNames,
   getPrice,
   getCities,
@@ -25,8 +25,9 @@ const tripInfoCost = document.querySelector(`.trip-info__cost`).querySelector(`s
 
 
 const renderMenu = () => {
-  const menu = new Menu(menuValues);
+  const menu = new Menu();
   tripControls.querySelector(`h2`).after(menu.getElement());
+  return menu.getElement();
 };
 const renderFilters = () => {
   const filters = new Filters(filtersNames);
@@ -39,19 +40,44 @@ const renderTripInfo = () => {
   tripInfoCost.innerHTML = price;
 };
 
-const renderEventAdd = () => {
-  const eventAdd = new EventAdd();
-  tripEvents.append(eventAdd.getElement());
-  addButton.disabled = true;
+const renderMessage = () => {
+  const message = new Message();
+  tripEvents.append(message.getElement());
 };
 
-renderMenu();
+const stats = new Stats();
+
+
+
+
+const menu = renderMenu();
+const tripController = new TripController(tripEvents, eventsData);
 renderFilters();
 
 if (eventsData.length > 0) {
   renderTripInfo();
-  const tripController = new TripController(tripEvents, eventsData);
   tripController.init();
+  tripEvents.append(stats.getElement());
 } else {
-  renderEventAdd();
+  renderMessage();
 }
+
+const onMenuClick = (evt) => {
+
+  if (evt.target.tagName !== `A`) {
+    return;
+  }
+  const get
+  Array.from(menu.querySelectorAll(`.trip-tabs__btn`)).forEach((it) => it.classList.remove(`.trip-tabs__btn--active`));
+  evt.target.classList.add(`.trip-tabs__btn--active`);
+  switch (evt.target.textContent) {
+    case `Table`:
+      stats.getElement().classList.add(`visually-hidden`);
+      tripController.show();
+      break;
+    case `Stats`:
+      stats.getElement().classList.remove(`visually-hidden`);
+      tripController.hide();
+  }
+};
+menu.addEventListener(`click`, onMenuClick);
