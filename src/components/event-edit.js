@@ -9,6 +9,11 @@ import AbstractComponent from "./abstract-component.js";
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
+const FLATPICKR_PARAMETRS = {
+  altInput: true,
+  altFormat: `d.m.y H:i`,
+  enableTime: true
+};
 export default class EventEdit extends AbstractComponent {
   constructor({
     type,
@@ -31,22 +36,16 @@ export default class EventEdit extends AbstractComponent {
     this._isFavorite = isFavorite;
     this._subscribeOnTypeChange();
     this._subscribeOnCityChange();
-    this._getDate();
+    this._addFlatpickr();
   }
-  _getDate() {
+  _addFlatpickr() {
     flatpickr((this.getElement().querySelector(`#event-start-time-1`)), {
-      altInput: true,
-      allowInput: true,
+      ...FLATPICKR_PARAMETRS,
       defaultDate: this._start,
-      altFormat: `d.m.Y H:i`,
-      enableTime: true
     });
     flatpickr((this.getElement().querySelector(`#event-end-time-1`)), {
-      altInput: true,
-      allowInput: true,
+      ...FLATPICKR_PARAMETRS,
       defaultDate: this._end,
-      altFormat: `d.m.Y H:i`,
-      enableTime: true
     });
 
   }
@@ -76,15 +75,34 @@ export default class EventEdit extends AbstractComponent {
   }
   _subscribeOnCityChange() {
     const onCityChange = (evt) => {
-      const description = this.getElement().querySelector(`.event__destination-description`);
-      const photosContainer = this.getElement().querySelector(`.event__photos-tape`);
+
       if (evt.target.value) {
         const newType = DESTINATIONS[DESTINATIONS.findIndex((it) => it.city === evt.target.value)];
-        description.textContent = newType.description;
-        photosContainer.innerHTML = this._getPhotos(newType);
-      }
+        const destination = this.getElement().querySelector(`.event__section--destination`);
 
+        if (!destination) {
+          const getDescription = () => {
+            return `<section class="event__section  event__section--destination">
+          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+          <p class="event__destination-description">${newType.description}</p>
+
+          <div class="event__photos-container">
+            <div class="event__photos-tape">
+            ${newType.urls.map((url) => `<img class="event__photo" src=${url} alt="Event photo">`).join(``)}
+            </div>
+          </div>
+        </section>`;
+          };
+          this.getElement().querySelector(`.event__details`).insertAdjacentHTML(`beforeend`, getDescription());
+        } else {
+          const description = this.getElement().querySelector(`.event__destination-description`);
+          const photosContainer = this.getElement().querySelector(`.event__photos-tape`);
+          description.textContent = newType.description;
+          photosContainer.innerHTML = this._getPhotos(newType);
+        }
+      }
     };
+
     this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, onCityChange);
   }
 
@@ -98,15 +116,15 @@ export default class EventEdit extends AbstractComponent {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${this._type.type}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${this._type.type ? this._type.type : TYPES_OF_TRANSFER[0].type}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
           <div class="event__type-list">
           <fieldset class="event__type-group">
           <legend class="visually-hidden">Transfer</legend>
-          ${TYPES_OF_TRANSFER.map((transferType) => `<div class="event__type-item">
-          <input id="event-type-${transferType.type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${transferType.type}" ${transferType.type === this._type.type ? `checked` : ``}>
+          ${TYPES_OF_TRANSFER.map((transferType, index) => `<div class="event__type-item">
+          <input id="event-type-${transferType.type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${transferType.type}" ${transferType.type === this._type.type ? `checked` : ``} ${!this._type.type && index === 0 ? `checked` : ``}>
           <label class="event__type-label  event__type-label--${transferType.type}" for="event-type-${transferType.type}-1">${transferType.type}</label>
         </div>`).join(``)}
         </fieldset>
@@ -122,7 +140,7 @@ export default class EventEdit extends AbstractComponent {
 
         <div class="event__field-group  event__field-group--destination">
         <label class="event__label  event__type-output" for="event-destination-1">
-          ${this._type.title}
+          ${this._type.title ? this._type.title : TYPES_OF_TRANSFER[0].title}
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._city}" list="destination-list-1">
         <datalist id="destination-list-1">
@@ -181,18 +199,18 @@ export default class EventEdit extends AbstractComponent {
             </div>`).join(``)}
           </div>
         </section>
+        ${this._city ? `${`<section class="event__section  event__section--destination">
+        <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+        <p class="event__destination-description">${DESTINATIONS.find((destination) => destination.city === this._city) ? DESTINATIONS.find((destination) => destination.city === this._city).description : ``}</p>
 
-        <section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${DESTINATIONS.find((destination) => destination.city === this._city).description}</p>
+        <div class="event__photos-container">
+          <div class="event__photos-tape">
 
-          <div class="event__photos-container">
-            <div class="event__photos-tape">
-
-            ${DESTINATIONS.filter((destination) => destination.city === this._city).map((destination) => destination.urls.map((url) => `<img class="event__photo" src=${url} alt="Event photo">`).join(``))}
-            </div>
+          ${DESTINATIONS.filter((destination) => destination.city === this._city).map((destination) => destination.urls.map((url) => `<img class="event__photo" src=${url} alt="Event photo">`).join(``))}
           </div>
-        </section>
+        </div>
+      </section>`} `: ``}
+
       </section>
     </form>
     </li>`;

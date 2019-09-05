@@ -25,6 +25,19 @@ export default class TripController {
     tripEvents.querySelector(`h2`).after(this._sort.getElement());
     this._sort.getElement().addEventListener(`click`, (evt) => this._onSortClick(evt));
   }
+  createTask() {
+    const defaultEvent = {
+      type: ``,
+      city:``,
+      price: ``,
+      start: new Date(),
+      end: new Date(),
+      offers: [],
+      isFavorite: false,
+    };
+    const eventsListContainer = this._container.querySelector(`.trip-sort`);
+    const eventController = new EventController(defaultEvent, `add`, eventsListContainer, this._onDataChange, this._onChangeView);
+  }
 
   _onSortClick(evt) {
     if (evt.target.tagName !== `LABEL`) {
@@ -76,11 +89,19 @@ export default class TripController {
     });
   }
   _renderEvent(eventData, eventsListContainer) {
-    const eventController = new EventController(eventData, eventsListContainer, this._onDataChange, this._onChangeView);
+    const eventController = new EventController(eventData, `default`, eventsListContainer, this._onDataChange, this._onChangeView);
     this._subscriptions.push(eventController.setDefaultView.bind(eventController));
   }
   _onDataChange(newData, oldData) {
-    this._eventsData[this._eventsData.findIndex((it) => it === oldData)] = newData;
+    const index = this._eventsData.findIndex((it) => it === oldData);
+    if (newData === null) {
+      this._eventsData = this._eventsData.slice();
+      this._eventsData.splice(index, 1);
+    } else if (oldData === null) {
+      this._eventsData = [newData, ...this._eventsData];
+    } else {
+      this._eventsData[index] = newData;
+    }
     this._renderDaysList();
   }
   _onChangeView() {

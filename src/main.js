@@ -1,4 +1,4 @@
-const EVENT_COUNT = 16;
+const EVENT_COUNT = 3;
 import Menu from './components/menu.js';
 import Filters from './components/filters.js';
 import TripInfo from './components/trip-info.js';
@@ -46,10 +46,6 @@ const renderMessage = () => {
 };
 
 const stats = new Stats();
-
-
-
-
 const menu = renderMenu();
 const tripController = new TripController(tripEvents, eventsData);
 renderFilters();
@@ -62,14 +58,19 @@ if (eventsData.length > 0) {
   renderMessage();
 }
 
-const onMenuClick = (evt) => {
+const onAddButtonClick = () => {
+  tripController.createTask();
+  addButton.disabled = true;
+  addButton.removeEventListener(`click`, onAddButtonClick);
+};
 
+const onMenuClick = (evt) => {
   if (evt.target.tagName !== `A`) {
     return;
   }
-  const get
-  Array.from(menu.querySelectorAll(`.trip-tabs__btn`)).forEach((it) => it.classList.remove(`.trip-tabs__btn--active`));
-  evt.target.classList.add(`.trip-tabs__btn--active`);
+  menu.querySelector(`.trip-tabs__btn--active`).classList.remove(`trip-tabs__btn--active`);
+  evt.target.classList.add(`trip-tabs__btn--active`);
+
   switch (evt.target.textContent) {
     case `Table`:
       stats.getElement().classList.add(`visually-hidden`);
@@ -81,3 +82,5 @@ const onMenuClick = (evt) => {
   }
 };
 menu.addEventListener(`click`, onMenuClick);
+
+addButton.addEventListener(`click`, onAddButtonClick);

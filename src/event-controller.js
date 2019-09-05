@@ -4,12 +4,10 @@ import {
   OPTIONS,
   TYPES_OF_EVENT
 } from "./data.js";
-// import flatpickr from 'flatpickr';
-// import 'flatpickr/dist/flatpickr.min.css';
-// import 'flatpickr/dist/themes/light.css';
 export default class EventController {
-  constructor(eventData, container, onDataChange, onChangeView) {
+  constructor(eventData, mode, container, onDataChange, onChangeView) {
     this._container = container;
+    this._mode = mode;
     this._eventData = eventData;
     this._event = new Event(eventData);
     this._eventEdit = new EventEdit(eventData);
@@ -19,13 +17,27 @@ export default class EventController {
   }
 
   create() {
-    // flatpickr((this._eventEdit.getElement().querySelector(`.event__input--time`)));
-    this._container.append(this._event.getElement());
+    switch (this._mode) {
+      case `add`:
+        this._container.after(this._eventEdit.getElement());
+
+        this._eventEdit.getElement().querySelector(`form`).classList.add(`trip-events__item`);
+        this._eventEdit.getElement().querySelector(`.event__rollup-btn`).remove();
+        this._eventEdit.getElement().style = `list-style: none`;
+        break;
+      case `default`:
+        this._container.append(this._event.getElement());
+        break;
+    }
 
     const onEscKeydown = (evt) => {
       if (evt.key === `Esc` || evt.key === `Escape`) {
         evt.preventDefault();
-        this._container.replaceChild(this._event.getElement(), this._eventEdit.getElement());
+        if (this._mode === `default`) {
+          this._container.replaceChild(this._event.getElement(), this._eventEdit.getElement());
+        } else {
+          this._onDataChange(null, null);
+        }
         document.removeEventListener(`keydown`, onEscKeydown);
       }
     };
@@ -36,10 +48,18 @@ export default class EventController {
 
       document.addEventListener(`keydown`, onEscKeydown);
     });
-    this._eventEdit.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
-      this._container.replaceChild(this._event.getElement(), this._eventEdit.getElement());
-      document.removeEventListener(`keydown`, onEscKeydown);
-    });
+    if (this._mode === `default`) {
+      this._eventEdit.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+        this._container.replaceChild(this._event.getElement(), this._eventEdit.getElement());
+        document.removeEventListener(`keydown`, onEscKeydown);
+      });
+
+      this._eventEdit.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, () => {
+        this._onDataChange(null, this._eventData);
+        document.removeEventListener(`keydown`, onEscKeydown);
+      });
+    }
+
 
     this._eventEdit.getElement().querySelector(`.event--edit`).addEventListener(`submit`, (evt) => {
       evt.preventDefault();
@@ -55,7 +75,7 @@ export default class EventController {
         }),
         isFavorite: formData.get(`event-favorite`) === `on` ? true : false,
       };
-      this._onDataChange(entry, this._eventData);
+      this._onDataChange(entry, this._mode === `add` ? null : this._eventData);
       document.removeEventListener(`keydown`, onEscKeydown);
     });
   }
