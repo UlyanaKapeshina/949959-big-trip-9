@@ -25,6 +25,7 @@ export default class TripController {
     tripEvents.querySelector(`h2`).after(this._sort.getElement());
     this._sort.getElement().addEventListener(`click`, (evt) => this._onSortClick(evt));
   }
+
   _onSortClick(evt) {
     if (evt.target.tagName !== `LABEL`) {
       return;
@@ -84,5 +85,13 @@ export default class TripController {
   }
   _onChangeView() {
     this._subscriptions.forEach((subscription) => subscription());
+  }
+  hide() {
+    this._daysList.getElement().classList.add(`visually-hidden`);
+    this._sort.getElement().classList.add(`visually-hidden`);
+  }
+  show() {
+    this._daysList.getElement().classList.remove(`visually-hidden`);
+    this._sort.getElement().classList.remove(`visually-hidden`);
   }
 }
