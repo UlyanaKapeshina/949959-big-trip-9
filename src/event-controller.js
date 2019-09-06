@@ -4,62 +4,75 @@ import {
   OPTIONS,
   TYPES_OF_EVENT
 } from "./data.js";
+import {
+  render,
+  remove,
+  RenderPosition
+} from "./util.js";
 export default class EventController {
   constructor(eventData, mode, container, onDataChange, onChangeView) {
     this._container = container;
-    this._mode = mode;
+
     this._eventData = eventData;
     this._event = new Event(eventData);
     this._eventEdit = new EventEdit(eventData);
     this._onDataChange = onDataChange;
     this._onChangeView = onChangeView;
-    this.create();
+    this.create(mode);
   }
 
-  create() {
-    switch (this._mode) {
-      case `add`:
-        this._container.after(this._eventEdit.getElement());
+  create(mode) {
+    let currentView = this._event;
+    let position = RenderPosition.BEFOREEND;
+    if (mode === `add`) {
+      currentView = this._eventEdit;
+      position = RenderPosition.AFTER;
+      currentView.getElement().querySelector(`form`).classList.add(`trip-events__item`);
+      currentView.getElement().querySelector(`.event__rollup-btn`).remove();
+      currentView.getElement().style = `list-style: none`;
 
-        this._eventEdit.getElement().querySelector(`form`).classList.add(`trip-events__item`);
-        this._eventEdit.getElement().querySelector(`.event__rollup-btn`).remove();
-        this._eventEdit.getElement().style = `list-style: none`;
-        break;
-      case `default`:
-        this._container.append(this._event.getElement());
-        break;
     }
 
     const onEscKeydown = (evt) => {
       if (evt.key === `Esc` || evt.key === `Escape`) {
         evt.preventDefault();
-        if (this._mode === `default`) {
+        if (mode === `default`) {
           this._container.replaceChild(this._event.getElement(), this._eventEdit.getElement());
         } else {
-          this._onDataChange(null, null);
+          remove(currentView.getElement());
+          currentView.removeElement();
+
         }
         document.removeEventListener(`keydown`, onEscKeydown);
       }
     };
+    if (mode === `add`) {
 
+      document.addEventListener(`keydown`, onEscKeydown);
+    }
     this._event.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
       this._onChangeView();
       this._container.replaceChild(this._eventEdit.getElement(), this._event.getElement());
 
       document.addEventListener(`keydown`, onEscKeydown);
     });
-    if (this._mode === `default`) {
+    if (mode === `default`) {
       this._eventEdit.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
         this._container.replaceChild(this._event.getElement(), this._eventEdit.getElement());
         document.removeEventListener(`keydown`, onEscKeydown);
       });
-
-      this._eventEdit.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, () => {
-        this._onDataChange(null, this._eventData);
-        document.removeEventListener(`keydown`, onEscKeydown);
-      });
     }
 
+    this._eventEdit.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, (evt) => {
+      evt.preventDefault();
+      if (mode === `add`) {
+        remove(this._eventEdit.getElement());
+        this._eventEdit.removeElement();
+      } else {
+        this._onDataChange(null, this._eventData);
+      }
+      document.removeEventListener(`keydown`, onEscKeydown);
+    });
 
     this._eventEdit.getElement().querySelector(`.event--edit`).addEventListener(`submit`, (evt) => {
       evt.preventDefault();
@@ -75,9 +88,14 @@ export default class EventController {
         }),
         isFavorite: formData.get(`event-favorite`) === `on` ? true : false,
       };
-      this._onDataChange(entry, this._mode === `add` ? null : this._eventData);
+      this._onDataChange(entry, mode === `add` ? null : this._eventData);
+      if (mode === `add`) {
+        remove(this._eventEdit.getElement());
+        this._eventEdit.removeElement();
+      }
       document.removeEventListener(`keydown`, onEscKeydown);
     });
+    render(this._container, currentView.getElement(), position);
   }
   setDefaultView() {
     if (this._container.contains(this._eventEdit.getElement())) {

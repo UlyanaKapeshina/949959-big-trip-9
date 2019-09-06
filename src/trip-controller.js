@@ -1,6 +1,6 @@
 import Day from './components/day.js';
 import DaysList from './components/days-list.js';
-
+import Message from './components/message.js';
 import Sort from './components/sort.js';
 import EventController from './event-controller';
 import SortContainer from './components/sort-container';
@@ -13,6 +13,7 @@ export default class TripController {
     this._container = container;
     this._eventsData = eventsData;
     this._sort = new Sort();
+    this._message = new Message();
     this._daysList = new DaysList();
     this._sortContainer = new SortContainer();
     this._onDataChange = this._onDataChange.bind(this);
@@ -20,6 +21,9 @@ export default class TripController {
     this._onChangeView = this._onChangeView.bind(this);
   }
   init() {
+    if (this._eventsData === 0) {
+      this._renderMessage();
+    }
     this._renderDaysList();
     const tripEvents = document.querySelector(`.trip-events`);
     tripEvents.querySelector(`h2`).after(this._sort.getElement());
@@ -28,15 +32,22 @@ export default class TripController {
   createTask() {
     const defaultEvent = {
       type: ``,
-      city:``,
+      city: ``,
       price: ``,
       start: new Date(),
       end: new Date(),
       offers: [],
       isFavorite: false,
     };
+    if (this._message.getElement()) {
+      remove(this._message.getElement());
+    }
     const eventsListContainer = this._container.querySelector(`.trip-sort`);
     const eventController = new EventController(defaultEvent, `add`, eventsListContainer, this._onDataChange, this._onChangeView);
+  }
+  _renderMessage() {
+
+    this._container.append(this._message.getElement());
   }
 
   _onSortClick(evt) {
@@ -102,7 +113,13 @@ export default class TripController {
     } else {
       this._eventsData[index] = newData;
     }
-    this._renderDaysList();
+    if (this._eventsData.length === 0) {
+      this._renderMessage();
+      remove(this._daysList.getElement());
+
+    } else {
+      this._renderDaysList();
+    }
   }
   _onChangeView() {
     this._subscriptions.forEach((subscription) => subscription());

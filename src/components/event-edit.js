@@ -9,11 +9,11 @@ import AbstractComponent from "./abstract-component.js";
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
-const FLATPICKR_PARAMETRS = {
-  altInput: true,
-  altFormat: `d.m.y H:i`,
-  enableTime: true
-};
+// const FLATPICKR_PARAMETRS = {
+//   altInput: true,
+//   altFormat: `d.m.y H:i`,
+//   enableTime: true
+// };
 export default class EventEdit extends AbstractComponent {
   constructor({
     type,
@@ -40,11 +40,15 @@ export default class EventEdit extends AbstractComponent {
   }
   _addFlatpickr() {
     flatpickr((this.getElement().querySelector(`#event-start-time-1`)), {
-      ...FLATPICKR_PARAMETRS,
+      altInput: true,
+      altFormat: `d.m.y H:i`,
+      enableTime: true,
       defaultDate: this._start,
     });
     flatpickr((this.getElement().querySelector(`#event-end-time-1`)), {
-      ...FLATPICKR_PARAMETRS,
+      altInput: true,
+      altFormat: `d.m.y H:i`,
+      enableTime: true,
       defaultDate: this._end,
     });
 
@@ -93,7 +97,7 @@ export default class EventEdit extends AbstractComponent {
           </div>
         </section>`;
           };
-          this.getElement().querySelector(`.event__details`).insertAdjacentHTML(`beforeend`, getDescription());
+          this.getElement().querySelector(`form`).querySelector(`.event__details`).insertAdjacentHTML(`beforeend`, getDescription());
         } else {
           const description = this.getElement().querySelector(`.event__destination-description`);
           const photosContainer = this.getElement().querySelector(`.event__photos-tape`);
