@@ -9,14 +9,16 @@ import {getEventsInDays} from './util.js';
 
 
 export default class TripController {
-  constructor(container, eventsData) {
+  constructor(container, eventsData, onDataChange) {
     this._container = container;
     this._eventsData = eventsData;
+    this._creatingEvent = null;
     this._sort = new Sort();
     this._message = new Message();
     this._daysList = new DaysList();
     this._sortContainer = new SortContainer();
     this._onDataChange = this._onDataChange.bind(this);
+    this._onDataChangeMain = onDataChange;
     this._subscriptions = [];
     this.onChangeView = this.onChangeView.bind(this);
   }
@@ -29,7 +31,10 @@ export default class TripController {
     tripEvents.querySelector(`h2`).after(this._sort.getElement());
     this._sort.getElement().addEventListener(`click`, (evt) => this._onSortClick(evt));
   }
-  createTask(addButton) {
+  createEvent(addButton) {
+    if (this._creatingEvent) {
+      return;
+    }
     const defaultEvent = {
       type: ``,
       city: ``,
@@ -39,12 +44,16 @@ export default class TripController {
       offers: [],
       isFavorite: false,
     };
+    addButton.disabled = false;
     if (this._message.getElement()) {
       remove(this._message.getElement());
     }
     this._addButton = addButton;
     const eventsListContainer = this._container.querySelector(`.trip-sort`);
-    const eventController = new EventController(this._addButton, defaultEvent, `add`, eventsListContainer, this._onDataChange, this.onChangeView);
+    this._creatingEvent = new EventController(this._addButton, defaultEvent, `add`, eventsListContainer, (...args) => {
+      this._creatingEvent = null;
+      this._onDataChange(...args);
+    }, this.onChangeView);
   }
   _renderMessage() {
 
@@ -122,6 +131,7 @@ export default class TripController {
     } else {
       this._renderDaysList();
     }
+    this._onDataChangeMain(this._eventsData);
   }
   onChangeView() {
     this._subscriptions.forEach((subscription) => subscription());

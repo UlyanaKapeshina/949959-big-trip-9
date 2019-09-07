@@ -19,7 +19,7 @@ const tripControls = document.querySelector(`.trip-controls`);
 const tripEvents = document.querySelector(`.trip-events`);
 const tripInfo = document.querySelector(`.trip-main__trip-info`);
 const addButton = document.querySelector(`.trip-main__event-add-btn`);
-const eventsData = getEventsData(EVENT_COUNT);
+let eventsData = getEventsData(EVENT_COUNT);
 const tripCities = getCities(eventsData);
 const price = getPrice(eventsData);
 const tripInfoCost = document.querySelector(`.trip-info__cost`).querySelector(`span`);
@@ -28,7 +28,10 @@ const menu = new Menu();
 const filters = new Filters(filtersNames);
 const info = new TripInfo(tripCities, eventsData);
 const stats = new Stats();
-const tripController = new TripController(tripEvents, eventsData);
+const onDataChange = (events) => {
+  eventsData = events;
+};
+const tripController = new TripController(tripEvents, eventsData, onDataChange);
 
 render(tripControls.querySelector(`h2`), menu.getElement(), RenderPosition.AFTER);
 render(tripControls, filters.getElement(), RenderPosition.BEFOREEND);
@@ -44,7 +47,7 @@ if (eventsData.length > 0) {
 
 const onAddButtonClick = () => {
   addButton.disabled = true;
-  tripController.createTask(addButton);
+  tripController.createEvent(addButton);
   tripController.onChangeView();
   stats.hide();
   tripController.show();
@@ -66,6 +69,7 @@ const onMenuClick = (evt) => {
       break;
     case `Stats`:
       stats.show();
+      stats.getStatistics();
       tripController.hide();
   }
 };

@@ -56,8 +56,8 @@ export default class EventController {
     this._eventEdit.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, (evt) => {
       evt.preventDefault();
       if (mode === `add`) {
+        this._onDataChange();
         remove(currentView);
-        this._addButton.disabled = false;
       } else {
         this._onDataChange(null, this._eventData);
       }
@@ -81,7 +81,6 @@ export default class EventController {
       this._onDataChange(entry, mode === `add` ? null : this._eventData);
       if (mode === `add`) {
         remove(currentView);
-        this._addButton.disabled = false;
       }
       document.removeEventListener(`keydown`, onEscKeydown);
     });
