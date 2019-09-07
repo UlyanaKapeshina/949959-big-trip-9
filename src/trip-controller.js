@@ -23,7 +23,7 @@ export default class TripController {
     this.onChangeView = this.onChangeView.bind(this);
   }
   init() {
-    if (this._eventsData === 0) {
+    if (this._eventsData.length === 0) {
       this._renderMessage();
     }
     this._renderDaysList();
@@ -52,6 +52,7 @@ export default class TripController {
     const eventsListContainer = this._container.querySelector(`.trip-sort`);
     this._creatingEvent = new EventController(this._addButton, defaultEvent, `add`, eventsListContainer, (...args) => {
       this._creatingEvent = null;
+      this._addButton.disabled = false;
       this._onDataChange(...args);
     }, this.onChangeView);
   }
@@ -120,14 +121,12 @@ export default class TripController {
       this._eventsData.splice(index, 1);
     } else if (oldData === null) {
       this._eventsData = [newData, ...this._eventsData];
-      // this._addButton.disabled = false;
     } else {
       this._eventsData[index] = newData;
     }
     if (this._eventsData.length === 0) {
       this._renderMessage();
       remove(this._daysList.getElement());
-      // this._addButton.disabled = false;
     } else {
       this._renderDaysList();
     }

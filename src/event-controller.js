@@ -57,7 +57,7 @@ export default class EventController {
       evt.preventDefault();
       if (mode === `add`) {
         this._onDataChange();
-        this._addButton.disabled = false;
+        // this._addButton.disabled = false;
         remove(currentView);
       } else {
         this._onDataChange(null, this._eventData);
@@ -82,7 +82,7 @@ export default class EventController {
       this._onDataChange(entry, mode === `add` ? null : this._eventData);
       if (mode === `add`) {
         remove(currentView);
-        this._addButton.disabled = false;
+        // this._addButton.disabled = false;
       }
       document.removeEventListener(`keydown`, onEscKeydown);
     });
