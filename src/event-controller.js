@@ -56,8 +56,7 @@ export default class EventController {
     this._eventEdit.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, (evt) => {
       evt.preventDefault();
       if (mode === `add`) {
-        this._onDataChange();
-        // this._addButton.disabled = false;
+        this._onDataChange(``, ``);
         remove(currentView);
       } else {
         this._onDataChange(null, this._eventData);
@@ -71,7 +70,7 @@ export default class EventController {
       const entry = {
         type: TYPES_OF_EVENT.find((it) => it.type === formData.get(`event-type`)),
         city: formData.get(`event-destination`),
-        price: formData.get(`event-price`),
+        price: +formData.get(`event-price`),
         start: new Date(formData.get(`event-start-time`)),
         end: new Date(formData.get(`event-end-time`)),
         offers: OPTIONS.filter((option) => {
@@ -82,7 +81,6 @@ export default class EventController {
       this._onDataChange(entry, mode === `add` ? null : this._eventData);
       if (mode === `add`) {
         remove(currentView);
-        // this._addButton.disabled = false;
       }
       document.removeEventListener(`keydown`, onEscKeydown);
     });

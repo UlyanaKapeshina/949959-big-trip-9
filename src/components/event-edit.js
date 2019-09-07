@@ -77,27 +77,28 @@ export default class EventEdit extends AbstractComponent {
           </div>`;
     }).join(``);
   }
+  _getFirstDescription(newType) {
+    return `<section class="event__section  event__section--destination">
+    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+    <p class="event__destination-description">${newType.description}</p>
+
+    <div class="event__photos-container">
+      <div class="event__photos-tape">
+      ${newType.urls.map((url) => `<img class="event__photo" src=${url} alt="Event photo">`).join(``)}
+      </div>
+    </div>
+  </section>`;
+  }
   _subscribeOnCityChange() {
     const eventDetailsContainer = this.getElement().querySelector(`.event__details`);
     const onCityChange = (evt) => {
 
       if (evt.target.value) {
-        const newType = DESTINATIONS[DESTINATIONS.findIndex((it) => it.city === evt.target.value)];
+        const newType = DESTINATIONS.find((it) => it.city === evt.target.value);
         const destination = this.getElement().querySelector(`.event__section--destination`);
         if (!destination) {
-          const getDescription = () => {
-            return `<section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${newType.description}</p>
 
-          <div class="event__photos-container">
-            <div class="event__photos-tape">
-            ${newType.urls.map((url) => `<img class="event__photo" src=${url} alt="Event photo">`).join(``)}
-            </div>
-          </div>
-        </section>`;
-          };
-          eventDetailsContainer.insertAdjacentHTML(`beforeend`, getDescription());
+          eventDetailsContainer.insertAdjacentHTML(`beforeend`, this._getFirstDescription(newType));
         } else {
           const description = this.getElement().querySelector(`.event__destination-description`);
           const photosContainer = this.getElement().querySelector(`.event__photos-tape`);
@@ -205,12 +206,12 @@ export default class EventEdit extends AbstractComponent {
         </section>
         ${this._city ? `${`<section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${DESTINATIONS.find((destination) => destination.city === this._city) ? DESTINATIONS.find((destination) => destination.city === this._city).description : ``}</p>
+        <p class="event__destination-description">${(DESTINATIONS.find((it) => it.city === this._city) || {}).description || ``}</p>
 
         <div class="event__photos-container">
           <div class="event__photos-tape">
 
-          ${DESTINATIONS.filter((destination) => destination.city === this._city).map((destination) => destination.urls.map((url) => `<img class="event__photo" src=${url} alt="Event photo">`).join(``))}
+          ${DESTINATIONS.find((destination) => destination.city === this._city).urls.map((url) => `<img class="event__photo" src=${url} alt="Event photo">`).join(``)}
           </div>
         </div>
       </section>`} ` : ``}

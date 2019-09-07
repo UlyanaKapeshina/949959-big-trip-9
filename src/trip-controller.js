@@ -9,14 +9,15 @@ import {getEventsInDays} from './util.js';
 
 
 export default class TripController {
-  constructor(container, eventsData, onDataChange) {
+  constructor(container, eventsData, onDataChange, filters) {
     this._container = container;
     this._eventsData = eventsData;
     this._creatingEvent = null;
     this._sort = new Sort();
+    this._filters = filters;
     this._message = new Message();
     this._daysList = new DaysList();
-    this._sortContainer = new SortContainer();
+    this._sortOrFilterEventsContainer = new SortContainer();
     this._onDataChange = this._onDataChange.bind(this);
     this._onDataChangeMain = onDataChange;
     this._subscriptions = [];
@@ -30,6 +31,7 @@ export default class TripController {
     const tripEvents = document.querySelector(`.trip-events`);
     tripEvents.querySelector(`h2`).after(this._sort.getElement());
     this._sort.getElement().addEventListener(`click`, (evt) => this._onSortClick(evt));
+    this._filters.getElement().addEventListener(`click`, (evt) => this._onFilterClick(evt));
   }
   createEvent(addButton) {
     if (this._creatingEvent) {
@@ -57,7 +59,6 @@ export default class TripController {
     }, this.onChangeView);
   }
   _renderMessage() {
-
     this._container.append(this._message.getElement());
   }
 
@@ -66,8 +67,8 @@ export default class TripController {
       return;
     }
     this._daysList.getElement().innerHTML = ``;
-    this._daysList.getElement().append(this._sortContainer.getElement());
-    const eventsListSort = this._sortContainer.getElement().querySelector(`.trip-events__list`);
+    this._daysList.getElement().append(this._sortOrFilterEventsContainer.getElement());
+    const eventsListSort = this._sortOrFilterEventsContainer.getElement().querySelector(`.trip-events__list`);
     eventsListSort.innerHTML = ``;
     switch (evt.target.dataset.sortType) {
       case `price`:
@@ -79,6 +80,36 @@ export default class TripController {
         this._renderEvents(sortByTime, eventsListSort);
         break;
       case `default`:
+        this._renderDaysList();
+        break;
+    }
+  }
+  _onFilterClick(evt) {
+    if (evt.target.tagName !== `LABEL`) {
+      return;
+    }
+    this._daysList.getElement().innerHTML = ``;
+    this._daysList.getElement().append(this._sortOrFilterEventsContainer.getElement());
+    const eventsListSort = this._sortOrFilterEventsContainer.getElement().querySelector(`.trip-events__list`);
+    eventsListSort.innerHTML = ``;
+
+    const date = Date.now() + 100 * 60 * 60 * 24 * 1000 / 24;
+    switch (evt.target.textContent) {
+      case `Future`:
+        const futureEvents = this._eventsData.filter((event) => {
+          return event.start > date;
+        });
+
+        this._renderEvents(futureEvents, eventsListSort);
+        break;
+      case `Past`:
+        const pastEvents = this._eventsData.filter((event) => {
+
+          return event.start < date;
+        });
+        this._renderEvents(pastEvents, eventsListSort);
+        break;
+      case `Everything`:
         this._renderDaysList();
         break;
     }

@@ -1,4 +1,4 @@
-const EVENT_COUNT = 3;
+const EVENT_COUNT = 13;
 import Menu from './components/menu.js';
 import Filters from './components/filters.js';
 import TripInfo from './components/trip-info.js';
@@ -7,8 +7,7 @@ import TripController from './trip-controller.js';
 import {
   getEventsData,
   filtersNames,
-  getPrice,
-  getCities,
+  getPrice
 } from "./data.js";
 import {
   render,
@@ -20,28 +19,33 @@ const tripEvents = document.querySelector(`.trip-events`);
 const tripInfo = document.querySelector(`.trip-main__trip-info`);
 const addButton = document.querySelector(`.trip-main__event-add-btn`);
 let eventsData = getEventsData(EVENT_COUNT);
-const tripCities = getCities(eventsData);
-let price = getPrice(eventsData);
 const tripInfoCost = document.querySelector(`.trip-info__cost`).querySelector(`span`);
 
 const menu = new Menu();
 const filters = new Filters(filtersNames);
-const info = new TripInfo(tripCities, eventsData);
 const stats = new Stats();
+const renderInfo = () => {
+  const info = new TripInfo(eventsData);
+  render(tripInfo, info.getElement(), RenderPosition.AFTERBEGIN);
+  return info.getElement();
+};
+let info = renderInfo();
+
 const onDataChange = (events) => {
   eventsData = events;
-  price = getPrice(eventsData);
-  tripInfoCost.innerHTML = price;
+  tripInfoCost.innerHTML = getPrice(eventsData);
+  info.remove();
+  info = renderInfo();
 };
-const tripController = new TripController(tripEvents, eventsData, onDataChange);
+const tripController = new TripController(tripEvents, eventsData, onDataChange, filters);
 
 render(tripControls.querySelector(`h2`), menu.getElement(), RenderPosition.AFTER);
 render(tripControls, filters.getElement(), RenderPosition.BEFOREEND);
 
-if (eventsData.length > 0) {
-  render(tripInfo, info.getElement(), RenderPosition.AFTERBEGIN);
 
-  tripInfoCost.innerHTML = price;
+if (eventsData.length > 0) {
+
+  tripInfoCost.innerHTML = getPrice(eventsData);
   render(tripEvents, stats.getElement(), RenderPosition.BEFOREEND);
   stats.hide();
   tripController.init();
@@ -72,7 +76,7 @@ const onMenuClick = (evt) => {
     case `Stats`:
       tripController.hide();
       stats.show();
-      // stats.getStatistics();
+      stats.getStatistics(eventsData);
   }
 };
 menu.getElement().addEventListener(`click`, onMenuClick);
