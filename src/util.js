@@ -39,9 +39,28 @@ export const createElement = (template) => {
   newElement.innerHTML = template;
   return newElement.firstChild;
 };
+export const RenderPosition = {
+  BEFOREEND: `beforeend`,
+  AFTERBEGIN: `afterbegin`,
+  AFTER: `after`,
+  BEFORE: `before`,
+};
 
-export const render = (container, element) => {
-  container.append(element);
+export const render = (container, element, position) => {
+  switch (position) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+    case RenderPosition.AFTER:
+      container.after(element);
+      break;
+    case RenderPosition.BEFORE:
+      container.before(element);
+      break;
+  }
 };
 
 export const remove = (element) => {

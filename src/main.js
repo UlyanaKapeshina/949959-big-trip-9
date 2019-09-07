@@ -1,57 +1,77 @@
-const EVENT_COUNT = 16;
+const EVENT_COUNT = 3;
 import Menu from './components/menu.js';
 import Filters from './components/filters.js';
 import TripInfo from './components/trip-info.js';
-import EventAdd from './components/event-add.js';
+import Stats from './components/stats.js';
 import TripController from './trip-controller.js';
 import {
   getEventsData,
-  menuValues,
   filtersNames,
   getPrice,
   getCities,
-
 } from "./data.js";
+import {
+  render,
+  RenderPosition
+} from "./util.js";
 
 const tripControls = document.querySelector(`.trip-controls`);
 const tripEvents = document.querySelector(`.trip-events`);
 const tripInfo = document.querySelector(`.trip-main__trip-info`);
 const addButton = document.querySelector(`.trip-main__event-add-btn`);
-const eventsData = getEventsData(EVENT_COUNT);
+let eventsData = getEventsData(EVENT_COUNT);
 const tripCities = getCities(eventsData);
-
 const price = getPrice(eventsData);
 const tripInfoCost = document.querySelector(`.trip-info__cost`).querySelector(`span`);
 
-
-const renderMenu = () => {
-  const menu = new Menu(menuValues);
-  tripControls.querySelector(`h2`).after(menu.getElement());
+const menu = new Menu();
+const filters = new Filters(filtersNames);
+const info = new TripInfo(tripCities, eventsData);
+const stats = new Stats();
+const onDataChange = (events) => {
+  eventsData = events;
 };
-const renderFilters = () => {
-  const filters = new Filters(filtersNames);
-  tripControls.append(filters.getElement());
-};
+const tripController = new TripController(tripEvents, eventsData, onDataChange);
 
-const renderTripInfo = () => {
-  const info = new TripInfo(tripCities, eventsData);
-  tripInfo.prepend(info.getElement());
-  tripInfoCost.innerHTML = price;
-};
-
-const renderEventAdd = () => {
-  const eventAdd = new EventAdd();
-  tripEvents.append(eventAdd.getElement());
-  addButton.disabled = true;
-};
-
-renderMenu();
-renderFilters();
+render(tripControls.querySelector(`h2`), menu.getElement(), RenderPosition.AFTER);
+render(tripControls, filters.getElement(), RenderPosition.BEFOREEND);
 
 if (eventsData.length > 0) {
-  renderTripInfo();
-  const tripController = new TripController(tripEvents, eventsData);
+
+  render(tripInfo, info.getElement(), RenderPosition.AFTERBEGIN);
+  tripInfoCost.innerHTML = price;
+  render(tripEvents, stats.getElement(), RenderPosition.BEFOREEND);
+  stats.hide();
   tripController.init();
-} else {
-  renderEventAdd();
 }
+
+const onAddButtonClick = () => {
+  addButton.disabled = true;
+  tripController.createEvent(addButton);
+  tripController.onChangeView();
+  stats.hide();
+  tripController.show();
+  Array.from(menu.getElement().querySelectorAll(`a`)).find((a) => a.text === `Table`).classList.add(`trip-tabs__btn--active`);
+  Array.from(menu.getElement().querySelectorAll(`a`)).find((a) => a.text === `Stats`).classList.remove(`trip-tabs__btn--active`);
+};
+
+const onMenuClick = (evt) => {
+  if (evt.target.tagName !== `A`) {
+    return;
+  }
+  menu.getElement().querySelector(`.trip-tabs__btn--active`).classList.remove(`trip-tabs__btn--active`);
+  evt.target.classList.add(`trip-tabs__btn--active`);
+
+  switch (evt.target.textContent) {
+    case `Table`:
+      stats.hide();
+      tripController.show();
+      break;
+    case `Stats`:
+      stats.show();
+      stats.getStatistics();
+      tripController.hide();
+  }
+};
+menu.getElement().addEventListener(`click`, onMenuClick);
+addButton.addEventListener(`click`, onAddButtonClick);

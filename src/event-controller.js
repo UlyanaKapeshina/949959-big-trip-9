@@ -4,23 +4,33 @@ import {
   OPTIONS,
   TYPES_OF_EVENT
 } from "./data.js";
-// import flatpickr from 'flatpickr';
-// import 'flatpickr/dist/flatpickr.min.css';
-// import 'flatpickr/dist/themes/light.css';
+import {
+  render,
+  remove,
+  RenderPosition
+} from "./util.js";
 export default class EventController {
-  constructor(eventData, container, onDataChange, onChangeView) {
+  constructor(addButton, eventData, mode, container, onDataChange, onChangeView) {
     this._container = container;
+    this._addButton = addButton;
+
     this._eventData = eventData;
     this._event = new Event(eventData);
     this._eventEdit = new EventEdit(eventData);
     this._onDataChange = onDataChange;
     this._onChangeView = onChangeView;
-    this.create();
+    this.create(mode);
   }
 
-  create() {
-    // flatpickr((this._eventEdit.getElement().querySelector(`.event__input--time`)));
-    this._container.append(this._event.getElement());
+  create(mode) {
+    let currentView = this._event.getElement();
+    let position = RenderPosition.BEFOREEND;
+    if (mode === `add`) {
+      currentView = this._eventEdit.getElement().querySelector(`form`);
+      position = RenderPosition.AFTER;
+      currentView.classList.add(`trip-events__item`);
+      currentView.querySelector(`.event__rollup-btn`).remove();
+    }
 
     const onEscKeydown = (evt) => {
       if (evt.key === `Esc` || evt.key === `Escape`) {
@@ -36,14 +46,28 @@ export default class EventController {
 
       document.addEventListener(`keydown`, onEscKeydown);
     });
-    this._eventEdit.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
-      this._container.replaceChild(this._event.getElement(), this._eventEdit.getElement());
+    if (mode === `default`) {
+      this._eventEdit.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+        this._container.replaceChild(this._event.getElement(), this._eventEdit.getElement());
+        document.removeEventListener(`keydown`, onEscKeydown);
+      });
+    }
+
+    this._eventEdit.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, (evt) => {
+      evt.preventDefault();
+      if (mode === `add`) {
+        this._onDataChange();
+        this._addButton.disabled = false;
+        remove(currentView);
+      } else {
+        this._onDataChange(null, this._eventData);
+      }
       document.removeEventListener(`keydown`, onEscKeydown);
     });
 
     this._eventEdit.getElement().querySelector(`.event--edit`).addEventListener(`submit`, (evt) => {
       evt.preventDefault();
-      const formData = new FormData(this._eventEdit.getElement().querySelector(`.event--edit`));
+      const formData = new FormData(evt.target);
       const entry = {
         type: TYPES_OF_EVENT.find((it) => it.type === formData.get(`event-type`)),
         city: formData.get(`event-destination`),
@@ -55,9 +79,14 @@ export default class EventController {
         }),
         isFavorite: formData.get(`event-favorite`) === `on` ? true : false,
       };
-      this._onDataChange(entry, this._eventData);
+      this._onDataChange(entry, mode === `add` ? null : this._eventData);
+      if (mode === `add`) {
+        remove(currentView);
+        this._addButton.disabled = false;
+      }
       document.removeEventListener(`keydown`, onEscKeydown);
     });
+    render(this._container, currentView, position);
   }
   setDefaultView() {
     if (this._container.contains(this._eventEdit.getElement())) {
