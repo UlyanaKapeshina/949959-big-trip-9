@@ -44,7 +44,7 @@ export default class TripController {
       offers: [],
       isFavorite: false,
     };
-    addButton.disabled = false;
+
     if (this._message.getElement()) {
       remove(this._message.getElement());
     }
