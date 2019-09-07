@@ -78,12 +78,12 @@ export default class EventEdit extends AbstractComponent {
     }).join(``);
   }
   _subscribeOnCityChange() {
+    const eventDetailsContainer = this.getElement().querySelector(`.event__details`);
     const onCityChange = (evt) => {
 
       if (evt.target.value) {
         const newType = DESTINATIONS[DESTINATIONS.findIndex((it) => it.city === evt.target.value)];
         const destination = this.getElement().querySelector(`.event__section--destination`);
-
         if (!destination) {
           const getDescription = () => {
             return `<section class="event__section  event__section--destination">
@@ -97,7 +97,7 @@ export default class EventEdit extends AbstractComponent {
           </div>
         </section>`;
           };
-          this.getElement().querySelector(`form`).querySelector(`.event__details`).insertAdjacentHTML(`beforeend`, getDescription());
+          eventDetailsContainer.insertAdjacentHTML(`beforeend`, getDescription());
         } else {
           const description = this.getElement().querySelector(`.event__destination-description`);
           const photosContainer = this.getElement().querySelector(`.event__photos-tape`);
@@ -213,7 +213,7 @@ export default class EventEdit extends AbstractComponent {
           ${DESTINATIONS.filter((destination) => destination.city === this._city).map((destination) => destination.urls.map((url) => `<img class="event__photo" src=${url} alt="Event photo">`).join(``))}
           </div>
         </div>
-      </section>`} `: ``}
+      </section>`} ` : ``}
 
       </section>
     </form>

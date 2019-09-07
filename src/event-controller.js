@@ -10,8 +10,9 @@ import {
   RenderPosition
 } from "./util.js";
 export default class EventController {
-  constructor(eventData, mode, container, onDataChange, onChangeView) {
+  constructor(addButton, eventData, mode, container, onDataChange, onChangeView) {
     this._container = container;
+    this._addButton = addButton;
 
     this._eventData = eventData;
     this._event = new Event(eventData);
@@ -22,34 +23,23 @@ export default class EventController {
   }
 
   create(mode) {
-    let currentView = this._event;
+    let currentView = this._event.getElement();
     let position = RenderPosition.BEFOREEND;
     if (mode === `add`) {
-      currentView = this._eventEdit;
+      currentView = this._eventEdit.getElement().querySelector(`form`);
       position = RenderPosition.AFTER;
-      currentView.getElement().querySelector(`form`).classList.add(`trip-events__item`);
-      currentView.getElement().querySelector(`.event__rollup-btn`).remove();
-      currentView.getElement().style = `list-style: none`;
-
+      currentView.classList.add(`trip-events__item`);
+      currentView.querySelector(`.event__rollup-btn`).remove();
     }
 
     const onEscKeydown = (evt) => {
       if (evt.key === `Esc` || evt.key === `Escape`) {
         evt.preventDefault();
-        if (mode === `default`) {
-          this._container.replaceChild(this._event.getElement(), this._eventEdit.getElement());
-        } else {
-          remove(currentView.getElement());
-          currentView.removeElement();
-
-        }
+        this._container.replaceChild(this._event.getElement(), this._eventEdit.getElement());
         document.removeEventListener(`keydown`, onEscKeydown);
       }
     };
-    if (mode === `add`) {
 
-      document.addEventListener(`keydown`, onEscKeydown);
-    }
     this._event.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
       this._onChangeView();
       this._container.replaceChild(this._eventEdit.getElement(), this._event.getElement());
@@ -66,8 +56,8 @@ export default class EventController {
     this._eventEdit.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, (evt) => {
       evt.preventDefault();
       if (mode === `add`) {
-        remove(this._eventEdit.getElement());
-        this._eventEdit.removeElement();
+        remove(currentView);
+        this._addButton.disabled = false;
       } else {
         this._onDataChange(null, this._eventData);
       }
@@ -76,7 +66,7 @@ export default class EventController {
 
     this._eventEdit.getElement().querySelector(`.event--edit`).addEventListener(`submit`, (evt) => {
       evt.preventDefault();
-      const formData = new FormData(this._eventEdit.getElement().querySelector(`.event--edit`));
+      const formData = new FormData(evt.target);
       const entry = {
         type: TYPES_OF_EVENT.find((it) => it.type === formData.get(`event-type`)),
         city: formData.get(`event-destination`),
@@ -90,12 +80,12 @@ export default class EventController {
       };
       this._onDataChange(entry, mode === `add` ? null : this._eventData);
       if (mode === `add`) {
-        remove(this._eventEdit.getElement());
-        this._eventEdit.removeElement();
+        remove(currentView);
+        this._addButton.disabled = false;
       }
       document.removeEventListener(`keydown`, onEscKeydown);
     });
-    render(this._container, currentView.getElement(), position);
+    render(this._container, currentView, position);
   }
   setDefaultView() {
     if (this._container.contains(this._eventEdit.getElement())) {

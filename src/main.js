@@ -43,9 +43,13 @@ if (eventsData.length > 0) {
 }
 
 const onAddButtonClick = () => {
-  tripController.createTask();
-  // addButton.disabled = true;
-  // addButton.removeEventListener(`click`, onAddButtonClick);
+  addButton.disabled = true;
+  tripController.createTask(addButton);
+  tripController.onChangeView();
+  stats.hide();
+  tripController.show();
+  Array.from(menu.getElement().querySelectorAll(`a`)).find((a) => a.text === `Table`).classList.add(`trip-tabs__btn--active`);
+  Array.from(menu.getElement().querySelectorAll(`a`)).find((a) => a.text === `Stats`).classList.remove(`trip-tabs__btn--active`);
 };
 
 const onMenuClick = (evt) => {

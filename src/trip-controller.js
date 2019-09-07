@@ -18,7 +18,7 @@ export default class TripController {
     this._sortContainer = new SortContainer();
     this._onDataChange = this._onDataChange.bind(this);
     this._subscriptions = [];
-    this._onChangeView = this._onChangeView.bind(this);
+    this.onChangeView = this.onChangeView.bind(this);
   }
   init() {
     if (this._eventsData === 0) {
@@ -29,7 +29,7 @@ export default class TripController {
     tripEvents.querySelector(`h2`).after(this._sort.getElement());
     this._sort.getElement().addEventListener(`click`, (evt) => this._onSortClick(evt));
   }
-  createTask() {
+  createTask(addButton) {
     const defaultEvent = {
       type: ``,
       city: ``,
@@ -42,8 +42,9 @@ export default class TripController {
     if (this._message.getElement()) {
       remove(this._message.getElement());
     }
+    this._addButton = addButton;
     const eventsListContainer = this._container.querySelector(`.trip-sort`);
-    const eventController = new EventController(defaultEvent, `add`, eventsListContainer, this._onDataChange, this._onChangeView);
+    const eventController = new EventController(this._addButton, defaultEvent, `add`, eventsListContainer, this._onDataChange, this.onChangeView);
   }
   _renderMessage() {
 
@@ -100,7 +101,7 @@ export default class TripController {
     });
   }
   _renderEvent(eventData, eventsListContainer) {
-    const eventController = new EventController(eventData, `default`, eventsListContainer, this._onDataChange, this._onChangeView);
+    const eventController = new EventController(this._addButton, eventData, `default`, eventsListContainer, this._onDataChange, this.onChangeView);
     this._subscriptions.push(eventController.setDefaultView.bind(eventController));
   }
   _onDataChange(newData, oldData) {
@@ -110,18 +111,19 @@ export default class TripController {
       this._eventsData.splice(index, 1);
     } else if (oldData === null) {
       this._eventsData = [newData, ...this._eventsData];
+      // this._addButton.disabled = false;
     } else {
       this._eventsData[index] = newData;
     }
     if (this._eventsData.length === 0) {
       this._renderMessage();
       remove(this._daysList.getElement());
-
+      // this._addButton.disabled = false;
     } else {
       this._renderDaysList();
     }
   }
-  _onChangeView() {
+  onChangeView() {
     this._subscriptions.forEach((subscription) => subscription());
   }
   hide() {
