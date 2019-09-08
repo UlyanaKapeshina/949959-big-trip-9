@@ -169,9 +169,11 @@ export default class TripController {
   hide() {
     this._daysList.getElement().classList.add(`visually-hidden`);
     this._sort.getElement().classList.add(`visually-hidden`);
+    this._filters.getElement().classList.add(`visually-hidden`);
   }
   show() {
     this._daysList.getElement().classList.remove(`visually-hidden`);
     this._sort.getElement().classList.remove(`visually-hidden`);
+    this._filters.getElement().classList.remove(`visually-hidden`);
   }
 }
