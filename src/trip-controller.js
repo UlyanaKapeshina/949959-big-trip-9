@@ -9,27 +9,29 @@ import {getEventsInDays} from './util.js';
 
 
 export default class TripController {
-  constructor(container, eventsData, onDataChange) {
+  constructor(container, eventsData, onDataChange, filters) {
     this._container = container;
     this._eventsData = eventsData;
     this._creatingEvent = null;
     this._sort = new Sort();
+    this._filters = filters;
     this._message = new Message();
     this._daysList = new DaysList();
-    this._sortContainer = new SortContainer();
+    this._sortOrFilterEventsContainer = new SortContainer();
     this._onDataChange = this._onDataChange.bind(this);
     this._onDataChangeMain = onDataChange;
     this._subscriptions = [];
     this.onChangeView = this.onChangeView.bind(this);
   }
   init() {
-    if (this._eventsData === 0) {
+    if (this._eventsData.length === 0) {
       this._renderMessage();
     }
     this._renderDaysList();
     const tripEvents = document.querySelector(`.trip-events`);
     tripEvents.querySelector(`h2`).after(this._sort.getElement());
     this._sort.getElement().addEventListener(`click`, (evt) => this._onSortClick(evt));
+    this._filters.getElement().addEventListener(`click`, (evt) => this._onFilterClick(evt));
   }
   createEvent(addButton) {
     if (this._creatingEvent) {
@@ -52,11 +54,11 @@ export default class TripController {
     const eventsListContainer = this._container.querySelector(`.trip-sort`);
     this._creatingEvent = new EventController(this._addButton, defaultEvent, `add`, eventsListContainer, (...args) => {
       this._creatingEvent = null;
+      this._addButton.disabled = false;
       this._onDataChange(...args);
     }, this.onChangeView);
   }
   _renderMessage() {
-
     this._container.append(this._message.getElement());
   }
 
@@ -65,8 +67,8 @@ export default class TripController {
       return;
     }
     this._daysList.getElement().innerHTML = ``;
-    this._daysList.getElement().append(this._sortContainer.getElement());
-    const eventsListSort = this._sortContainer.getElement().querySelector(`.trip-events__list`);
+    this._daysList.getElement().append(this._sortOrFilterEventsContainer.getElement());
+    const eventsListSort = this._sortOrFilterEventsContainer.getElement().querySelector(`.trip-events__list`);
     eventsListSort.innerHTML = ``;
     switch (evt.target.dataset.sortType) {
       case `price`:
@@ -78,6 +80,36 @@ export default class TripController {
         this._renderEvents(sortByTime, eventsListSort);
         break;
       case `default`:
+        this._renderDaysList();
+        break;
+    }
+  }
+  _onFilterClick(evt) {
+    if (evt.target.tagName !== `LABEL`) {
+      return;
+    }
+    this._daysList.getElement().innerHTML = ``;
+    this._daysList.getElement().append(this._sortOrFilterEventsContainer.getElement());
+    const eventsListSort = this._sortOrFilterEventsContainer.getElement().querySelector(`.trip-events__list`);
+    eventsListSort.innerHTML = ``;
+
+    const date = Date.now() + 100 * 60 * 60 * 24 * 1000 / 24;
+    switch (evt.target.textContent) {
+      case `Future`:
+        const futureEvents = this._eventsData.filter((event) => {
+          return event.start > date;
+        });
+
+        this._renderEvents(futureEvents, eventsListSort);
+        break;
+      case `Past`:
+        const pastEvents = this._eventsData.filter((event) => {
+
+          return event.start < date;
+        });
+        this._renderEvents(pastEvents, eventsListSort);
+        break;
+      case `Everything`:
         this._renderDaysList();
         break;
     }
@@ -120,14 +152,12 @@ export default class TripController {
       this._eventsData.splice(index, 1);
     } else if (oldData === null) {
       this._eventsData = [newData, ...this._eventsData];
-      // this._addButton.disabled = false;
     } else {
       this._eventsData[index] = newData;
     }
     if (this._eventsData.length === 0) {
       this._renderMessage();
       remove(this._daysList.getElement());
-      // this._addButton.disabled = false;
     } else {
       this._renderDaysList();
     }
@@ -139,9 +169,11 @@ export default class TripController {
   hide() {
     this._daysList.getElement().classList.add(`visually-hidden`);
     this._sort.getElement().classList.add(`visually-hidden`);
+    this._filters.getElement().classList.add(`visually-hidden`);
   }
   show() {
     this._daysList.getElement().classList.remove(`visually-hidden`);
     this._sort.getElement().classList.remove(`visually-hidden`);
+    this._filters.getElement().classList.remove(`visually-hidden`);
   }
 }
