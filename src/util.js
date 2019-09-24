@@ -13,12 +13,25 @@ export const getRandomArray = (min, max, array) => {
   }
   return newArray;
 };
-// массив случайных фотографий
-export const getArray = (min, max) => {
+// массив случайных элементов из набора
+export const getRandomString = (min, max) => {
+  const lettersAndNumbers = [`a`, `b`, `c`, `d`, `e`, `f`, `g`, `h`, `i`, `j`, `k`, `l`, `m`, `n`, `o`, `p`, `q`, `r`, `s`, `t`, `u`, `v`, `w`, `x`, `y`, `z`, `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`];
   const newArray = [];
   const newArrayLength = getRandomInteger(min, max);
   for (let i = 0; i < newArrayLength; i++) {
-    newArray.push(`http://picsum.photos/300/150?r=${Math.random()}`);
+    newArray.push(getRandomElement(lettersAndNumbers));
+  }
+  return newArray.join(``);
+};
+// массив случайных фотографий
+export const getPictures = (min, max) => {
+  const newArray = [];
+  const newArrayLength = getRandomInteger(min, max);
+  for (let i = 0; i < newArrayLength; i++) {
+    newArray.push({
+      url: `http://picsum.photos/300/150?r=${Math.random()}`,
+      alt: `ololo`
+    });
   }
   return newArray;
 };
@@ -80,4 +93,64 @@ export const getEventsInDays = (eventsData) => {
     return acc;
   }, {});
 };
+export const getPrice = ((eventsData) => {
+  let price = 0;
+  if (eventsData.length !== 0) {
+    price = eventsData.map((event) => {
+      const offersPrice = Array.from(event.offers).reduce((a, b) => {
+        return a + b.price;
+      }, 0);
+      return event.price + offersPrice;
+    }).reduce((a, b) => a + b);
+  }
+  return price;
+});
+export const filtersNames = [`Everything`, `Future`, `Past`];
+export const TYPES_OF_TRANSFER = [{
+    title: `Bus to`,
+    id: `bus`,
+  },
+  {
+    title: `Drive to`,
+    id: `drive`,
+  },
+  {
+    title: `Flight to`,
+    id: `flight`,
+  },
+  {
+    title: `Ship to`,
+    id: `ship`,
+  },
+  {
+    title: `Taxi to`,
+    id: `taxi`,
+  },
+  {
+    title: `Train to`,
+    id: `train`,
 
+  },
+  {
+    title: `Transport to`,
+    id: `transport`,
+
+  },
+];
+export const TYPES_OF_ACTIVITY = [{
+    title: `Check-in in`,
+    id: `check-in`,
+
+  },
+  {
+    title: `Restaurant in`,
+    id: `restaurant`,
+
+  },
+  {
+    title: `Sightseeing in`,
+    id: `sightseeing`,
+
+  },
+];
+export const TYPES_OF_EVENT = TYPES_OF_TRANSFER.concat(TYPES_OF_ACTIVITY);

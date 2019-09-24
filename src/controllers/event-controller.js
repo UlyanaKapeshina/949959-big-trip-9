@@ -1,18 +1,15 @@
-import Event from './components/event.js';
-import EventEdit from './components/event-edit.js';
-import {
-  OPTIONS,
-  TYPES_OF_EVENT
-} from "./data.js";
+import Event from './../components/event.js';
+import EventEdit from './../components/event-edit.js';
 import {
   render,
   remove,
   RenderPosition
-} from "./util.js";
+} from "./../util.js";
+import {allOffers} from './../main.js';
 export default class EventController {
-  constructor(addButton, eventData, mode, container, onDataChange, onChangeView) {
+  constructor(eventData, mode, container, onDataChange, onChangeView) {
     this._container = container;
-    this._addButton = addButton;
+    // this._addButton = addButton;
 
     this._eventData = eventData;
     this._event = new Event(eventData);
@@ -56,10 +53,10 @@ export default class EventController {
     this._eventEdit.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, (evt) => {
       evt.preventDefault();
       if (mode === `add`) {
-        this._onDataChange(``, ``);
+        this._onDataChange();
         remove(currentView);
       } else {
-        this._onDataChange(null, this._eventData);
+        this._onDataChange(`delete`, this._eventData);
       }
       document.removeEventListener(`keydown`, onEscKeydown);
     });
@@ -67,18 +64,28 @@ export default class EventController {
     this._eventEdit.getElement().querySelector(`.event--edit`).addEventListener(`submit`, (evt) => {
       evt.preventDefault();
       const formData = new FormData(evt.target);
+
       const entry = {
-        type: TYPES_OF_EVENT.find((it) => it.type === formData.get(`event-type`)),
-        city: formData.get(`event-destination`),
+        id: this._eventData.id,
+        type: formData.get(`event-type`),
+        destination: {
+          city: formData.get(`event-destination`),
+          description: this._eventData.destination.description,
+          pictures: this._eventData.destination.pictures
+        },
         price: +formData.get(`event-price`),
         start: new Date(formData.get(`event-start-time`)),
         end: new Date(formData.get(`event-end-time`)),
-        offers: OPTIONS.filter((option) => {
-          return formData.has(`event-offer-${option.id}`);
+        offers: allOffers.find((it) => it.type === formData.get(`event-type`)).offers.map((it) => {
+          return {
+            title: it.title,
+            price: it.price,
+            isChecked: formData.get(`event-offer-${it.title}`) === `on` ? true : false
+          };
         }),
         isFavorite: formData.get(`event-favorite`) === `on` ? true : false,
       };
-      this._onDataChange(entry, mode === `add` ? null : this._eventData);
+      this._onDataChange(`change`, this._eventData, entry);
       if (mode === `add`) {
         remove(currentView);
       }
