@@ -54,6 +54,18 @@ const onDataChange = (actionType, update, data) => {
           info.remove();
           info = renderInfo(events);
         });
+      break;
+    case `create`:
+      api.createEvent(data)
+        .then(() => api.getEvents())
+        .then((events) => {
+          stats.update(events);
+
+          tripController.init(events);
+          tripInfoCost.innerHTML = getPrice(events);
+          info.remove();
+          info = renderInfo(events);
+        });
   }
 };
 

@@ -85,7 +85,7 @@ export default class EventController {
         }),
         isFavorite: formData.get(`event-favorite`) === `on` ? true : false,
       };
-      this._onDataChange(`change`, this._eventData, entry);
+      this._onDataChange(mode === `add` ? `create` : `change`, this._eventData, entry);
       if (mode === `add`) {
         remove(currentView);
       }

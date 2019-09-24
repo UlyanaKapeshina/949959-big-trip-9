@@ -32,10 +32,11 @@ export const API = class {
 
   }
   createEvent(event) {
+    const dataRAW = ModelEvent.toRAW(event);
     return this._load({
       url: `${this._url}points`,
       method: `POST`,
-      body: JSON.stringify(event),
+      body: JSON.stringify(dataRAW),
       headers: new Headers({'Content-Type': `application/json`})
     })
     .then((response) => response.json());
