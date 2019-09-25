@@ -64,7 +64,7 @@ export default class EventEdit extends AbstractComponent {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${this._type.id ? this._type.id : TYPES_OF_TRANSFER[0].type}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${this._type.id ? this._type.id : TYPES_OF_TRANSFER[0].id}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -90,7 +90,7 @@ export default class EventEdit extends AbstractComponent {
         <label class="event__label  event__type-output" for="event-destination-1">
           ${this._type.title ? this._type.title : TYPES_OF_TRANSFER[0].title}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1"  name="event-destination" value="${this._destination.city}" list="destination-list-1"  required>
+        <input class="event__input  event__input--destination" id="event-destination-1"  name="event-destination" value="${this._destination.city ? this._destination.city : ``}" list="destination-list-1"  required>
         <datalist id="destination-list-1">
           ${allDestinations ? allDestinations.map((destination) => `<option value="${destination.city}"></option>`).join(``) : ``}
         </datalist>
@@ -164,6 +164,7 @@ export default class EventEdit extends AbstractComponent {
     </li>`;
   }
   _subscribeOnTypeChange() {
+    const eventDetailsContainer = this.getElement().querySelector(`.event__details`);
     const label = this.getElement().querySelector(`.event__type-output`);
     const img = this.getElement().querySelector(`.event__type-icon`);
     let offersContainer = this.getElement().querySelector(`.event__available-offers`);
@@ -174,9 +175,9 @@ export default class EventEdit extends AbstractComponent {
       img.src = `img/icons/${newType.id}.png`;
       const offers = allOffers.find((it) => it.type === newType.id).offers;
       if (!offersContainer) {
-        const eventDetailsContainer = this.getElement().querySelector(`.event__details`);
+
         eventDetailsContainer.insertAdjacentHTML(`afterbegin`, this._getOffersContainer());
-        offersContainer = this.getElement().querySelector(`.event__available-offers`);
+        offersContainer = eventDetailsContainer.querySelector(`.event__available-offers`);
       }
       offersContainer.innerHTML = this._getOffers(offers);
     };
@@ -248,4 +249,45 @@ export default class EventEdit extends AbstractComponent {
   _getPhotos(destination) {
     return destination.pictures.map((it) => `<img class="event__photo" src=${it.url} alt="${it.alt}">`).join(``);
   }
+  // _getDisabledFormElements() {
+  //   Array.from(this.getElement().querySelectorAll(`input, button`)).forEach((it) => {
+  //     it.disabled = true;
+  //   });
+  // }
+  // _getActiveFormElements() {
+  //   Array.from(this.getElement().querySelectorAll(`input, button`)).forEach((it) => {
+  //     it.disabled = false;
+  //   });
+  // }
+  // bind(type) {
+  //   this._getDisabledFormElements();
+  //   switch (type) {
+  //     case `delete`:
+  //       this.getElement().querySelector(`.event__reset-btn `).textContent = `Deleting..`;
+  //       break;
+  //     case `change`:
+  //       this.getElement().querySelector(`.event__save-btn `).textContent = `Saving..`;
+  //       break;
+  //   }
+  // }
+  // shake() {
+  //   const ANIMATION_TIMEOUT = 600;
+  //   this.getElement().querySelector(`form`).style.border = `2px solid red`;
+  //   this.getElement().style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
+  //   setTimeout(() => {
+  //     this.getElement().style.animation = ``;
+  //     this.getElement().querySelector(`form`).style.border = `none`;
+  //   }, ANIMATION_TIMEOUT);
+  // }
+  // unbind(type) {
+  //   this._getActiveFormElements();
+  //   switch (type) {
+  //     case `delete`:
+  //       this.getElement().querySelector(`.event__reset-btn `).textContent = `Delete..`;
+  //       break;
+  //     case `change`:
+  //       this.getElement().querySelector(`.event__save-btn `).textContent = `Save`;
+  //       break;
+  //   }
+  // }
 }

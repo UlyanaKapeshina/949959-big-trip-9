@@ -9,7 +9,8 @@ import {
 import {
 
   filtersNames,
-  getPrice
+  getPrice,
+  remove
 } from "./util.js";
 import {
   render,
@@ -29,22 +30,24 @@ const api = new API({
 });
 
 
-const onDataChange = (actionType, update, data) => {
+const onDataChange = (actionType, onError, data, element) => {
   switch (actionType) {
     case `delete`:
-      api.deleteEvent(update.id)
+      api.deleteEvent(element.id)
         .then(() => api.getEvents())
         .then((events) => {
           stats.update(events);
-
           tripController.init(events);
           tripInfoCost.innerHTML = getPrice(events);
           info.remove();
           info = renderInfo(events);
+        })
+        .catch(() => {
+          onError();
         });
       break;
     case `change`:
-      api.changeEvent(update.id, data)
+      api.changeEvent(data.id, data)
         .then(() => api.getEvents())
         .then((events) => {
           stats.update(events);
@@ -53,10 +56,14 @@ const onDataChange = (actionType, update, data) => {
           tripInfoCost.innerHTML = getPrice(events);
           info.remove();
           info = renderInfo(events);
+        })
+        .catch(() => {
+          onError(`change`);
         });
       break;
     case `create`:
       api.createEvent(data)
+        .then(() => remove(element))
         .then(() => api.getEvents())
         .then((events) => {
           stats.update(events);
@@ -65,6 +72,9 @@ const onDataChange = (actionType, update, data) => {
           tripInfoCost.innerHTML = getPrice(events);
           info.remove();
           info = renderInfo(events);
+        })
+        .catch(() => {
+          onError(`change`);
         });
   }
 };

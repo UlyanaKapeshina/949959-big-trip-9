@@ -93,7 +93,7 @@ export default class TripController {
     }
     const defaultEvent = {
       type: ``,
-      city: ``,
+      destination: ``,
       price: 0,
       start: new Date(),
       end: new Date(),
@@ -122,7 +122,8 @@ export default class TripController {
     remove(this._daysList.getElement());
     this._daysList.removeElement();
     this._container.append(this._daysList.getElement());
-    const eventsInDays = getEventsInDays(events.sort((a, b) => a.start - b.start));
+    const sortedEvents = events.sort((a, b) => a.start - b.start);
+    const eventsInDays = getEventsInDays(sortedEvents);
 
     const datesData = Object.keys(eventsInDays);
     datesData.forEach((date, index) => {

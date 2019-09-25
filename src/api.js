@@ -39,11 +39,12 @@ export const API = class {
       body: JSON.stringify(dataRAW),
       headers: new Headers({'Content-Type': `application/json`})
     })
-    .then((response) => response.json());
+    .then((response) => response.json())
+    .then(ModelEvent.parseEvent);
   }
   deleteEvent(id) {
     return this._load({
-      url: `${this._url}points/${id}`,
+      url: `${this._url}pointss/${id}`,
       method: `DELETE`
     });
   }
@@ -58,6 +59,7 @@ export const API = class {
     })
     .then((response) => response.json())
     .then(ModelEvent.parseEvent);
+
   }
 
   _checkStatus(response) {
@@ -73,7 +75,6 @@ export const API = class {
     headers.append(`Authorization`, this._authorization);
     return fetch(url, {method, body, headers})
     .then(this._checkStatus)
-
     .catch((error) => {
       console.error(`fetch error: ${error}`);
       throw error;

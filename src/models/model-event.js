@@ -19,8 +19,8 @@ export default class ModelEvent {
       }),
     };
     this.price = data[`base_price`];
-    this.start = data[`date_from`];
-    this.end = data[`date_to`];
+    this.start = new Date(data[`date_from`]);
+    this.end = new Date(data[`date_to`]);
     this.offers = data[`offers`];
     this.isFavorite = data[`is_favorite`];
   }

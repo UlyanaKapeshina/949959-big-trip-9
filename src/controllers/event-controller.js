@@ -5,7 +5,10 @@ import {
   remove,
   RenderPosition
 } from "./../util.js";
-import {allOffers} from './../main.js';
+import {
+  allOffers,
+  allDestinations
+} from './../main.js';
 export default class EventController {
   constructor(eventData, mode, container, onDataChange, onChangeView) {
     this._container = container;
@@ -27,7 +30,9 @@ export default class EventController {
       position = RenderPosition.AFTER;
       currentView.classList.add(`trip-events__item`);
       currentView.querySelector(`.event__rollup-btn`).remove();
+      currentView.querySelector(`.event__reset-btn`).textContent = `Cancel`;
     }
+
 
     const onEscKeydown = (evt) => {
       if (evt.key === `Esc` || evt.key === `Escape`) {
@@ -56,39 +61,39 @@ export default class EventController {
         this._onDataChange();
         remove(currentView);
       } else {
-        this._onDataChange(`delete`, this._eventData);
+        this._eventEdit._bind(`delete`);
+        this._onDataChange(`delete`, this.onError(`delete`), this._eventData);
       }
       document.removeEventListener(`keydown`, onEscKeydown);
     });
 
-    this._eventEdit.getElement().querySelector(`.event--edit`).addEventListener(`submit`, (evt) => {
+    this._eventEdit.getElement().addEventListener(`submit`, (evt) => {
       evt.preventDefault();
       const formData = new FormData(evt.target);
 
-      const entry = {
-        id: this._eventData.id,
-        type: formData.get(`event-type`),
-        destination: {
-          city: formData.get(`event-destination`),
-          description: this._eventData.destination.description,
-          pictures: this._eventData.destination.pictures
-        },
-        price: +formData.get(`event-price`),
-        start: new Date(formData.get(`event-start-time`)),
-        end: new Date(formData.get(`event-end-time`)),
-        offers: allOffers.find((it) => it.type === formData.get(`event-type`)).offers.map((it) => {
-          return {
-            title: it.title,
-            price: it.price,
-            isChecked: formData.get(`event-offer-${it.title}`) === `on` ? true : false
-          };
-        }),
-        isFavorite: formData.get(`event-favorite`) === `on` ? true : false,
+
+      this._eventData.id = this._eventData.id ? this._eventData.id : ``;
+      this._eventData.type = formData.get(`event-type`);
+      this._eventData.destination = {
+        city: formData.get(`event-destination`),
+        description: allDestinations.find((it) => it.city === formData.get(`event-destination`)).description,
+        pictures: allDestinations.find((it) => it.city === formData.get(`event-destination`)).pictures,
       };
-      this._onDataChange(mode === `add` ? `create` : `change`, this._eventData, entry);
-      if (mode === `add`) {
-        remove(currentView);
-      }
+      this._eventData.price = +formData.get(`event-price`);
+      this._eventData.start = new Date(formData.get(`event-start-time`));
+      this._eventData.end = new Date(formData.get(`event-end-time`));
+      this._eventData.offers = allOffers.find((it) => it.type === formData.get(`event-type`)).offers.map((it) => {
+        return {
+          title: it.title,
+          price: it.price,
+          isChecked: formData.get(`event-offer-${it.title}`) === `on` ? true : false
+        };
+      });
+      this._eventData.isFavorite = formData.get(`event-favorite`) === `on` ? true : false;
+
+      this._bind(`change`);
+
+      this._onDataChange(mode === `add` ? `create` : `change`, this.onError(), this._eventData);
       document.removeEventListener(`keydown`, onEscKeydown);
     });
     render(this._container, currentView, position);
@@ -96,6 +101,57 @@ export default class EventController {
   setDefaultView() {
     if (this._container.contains(this._eventEdit.getElement())) {
       this._container.replaceChild(this._event.getElement(), this._eventEdit.getElement());
+    }
+  }
+
+  _getDisabledFormElements() {
+    Array.from(this._eventEdit.getElement().querySelectorAll(`input, button`)).forEach((it) => {
+      it.disabled = true;
+    });
+  }
+  _getActiveFormElements() {
+    Array.from(this._eventEdit.getElement().querySelectorAll(`input, button`)).forEach((it) => {
+      it.disabled = false;
+    });
+  }
+  _bind(type) {
+    this._getDisabledFormElements();
+    switch (type) {
+      case `delete`:
+        this._eventEdit.getElement().querySelector(`.event__reset-btn `).textContent = `Deleting..`;
+        break;
+      case `change`:
+        this._eventEdit.getElement().querySelector(`.event__save-btn `).textContent = `Saving..`;
+        break;
+    }
+  }
+
+  onError(type) {
+    setTimeout(() => {
+      this._shake();
+      this._unbind(type);
+    }, 2000
+  );
+  }
+
+  _shake() {
+    const ANIMATION_TIMEOUT = 600;
+    this._eventEdit.getElement().querySelector(`form`).style.border = `2px solid red`;
+    this._eventEdit.getElement().style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
+    setTimeout(() => {
+      this._eventEdit.getElement().style.animation = ``;
+      this._eventEdit.getElement().querySelector(`form`).style.border = `none`;
+    }, ANIMATION_TIMEOUT);
+  }
+  _unbind(type) {
+    this._getActiveFormElements();
+    switch (type) {
+      case `delete`:
+        this._eventEdit.getElement().querySelector(`.event__reset-btn `).textContent = `Delete..`;
+        break;
+      case `change`:
+        this._eventEdit.getElement().querySelector(`.event__save-btn `).textContent = `Save`;
+        break;
     }
   }
 }
