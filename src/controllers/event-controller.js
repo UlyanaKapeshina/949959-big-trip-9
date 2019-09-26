@@ -19,10 +19,16 @@ export default class EventController {
     this._eventEdit = new EventEdit(eventData);
     this._onDataChange = onDataChange;
     this._onChangeView = onChangeView;
+    this._bind = this._bind.bind(this);
     this.create(mode);
   }
 
   create(mode) {
+    this._resetButton = this._eventEdit.getElement().querySelector(`.event__reset-btn `);
+    this._submitButton = this._eventEdit.getElement().querySelector(`.event__save-btn `);
+    this._formElements = Array.from(this._eventEdit.getElement().querySelectorAll(`input, button`));
+    this._form = this._eventEdit.getElement().querySelector(`form`);
+
     let currentView = this._event.getElement();
     let position = RenderPosition.BEFOREEND;
     if (mode === `add`) {
@@ -61,13 +67,13 @@ export default class EventController {
         this._onDataChange();
         remove(currentView);
       } else {
-        this._eventEdit._bind(`delete`);
-        this._onDataChange(`delete`, this.onError(`delete`), this._eventData);
+        this._bind(`delete`);
+        this._onDataChange(`delete`, this._eventData, this.onError.bind(this));
       }
       document.removeEventListener(`keydown`, onEscKeydown);
     });
 
-    this._eventEdit.getElement().addEventListener(`submit`, (evt) => {
+    this._eventEdit.getElement().querySelector(`.event--edit`).addEventListener(`submit`, (evt) => {
       evt.preventDefault();
       const formData = new FormData(evt.target);
 
@@ -93,7 +99,7 @@ export default class EventController {
 
       this._bind(`change`);
 
-      this._onDataChange(mode === `add` ? `create` : `change`, this.onError(), this._eventData);
+      this._onDataChange(mode === `add` ? `create` : `change`, this._eventData, this.onError.bind(this), currentView);
       document.removeEventListener(`keydown`, onEscKeydown);
     });
     render(this._container, currentView, position);
@@ -105,12 +111,12 @@ export default class EventController {
   }
 
   _getDisabledFormElements() {
-    Array.from(this._eventEdit.getElement().querySelectorAll(`input, button`)).forEach((it) => {
+    this._formElements.forEach((it) => {
       it.disabled = true;
     });
   }
   _getActiveFormElements() {
-    Array.from(this._eventEdit.getElement().querySelectorAll(`input, button`)).forEach((it) => {
+    this._formElements.forEach((it) => {
       it.disabled = false;
     });
   }
@@ -118,10 +124,10 @@ export default class EventController {
     this._getDisabledFormElements();
     switch (type) {
       case `delete`:
-        this._eventEdit.getElement().querySelector(`.event__reset-btn `).textContent = `Deleting..`;
+        this._resetButton.textContent = `Deleting..`;
         break;
       case `change`:
-        this._eventEdit.getElement().querySelector(`.event__save-btn `).textContent = `Saving..`;
+        this._submitButton.textContent = `Saving..`;
         break;
     }
   }
@@ -131,26 +137,26 @@ export default class EventController {
       this._shake();
       this._unbind(type);
     }, 2000
-  );
+    );
   }
 
   _shake() {
     const ANIMATION_TIMEOUT = 600;
-    this._eventEdit.getElement().querySelector(`form`).style.border = `2px solid red`;
-    this._eventEdit.getElement().style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
+    this._form.style.border = `2px solid red`;
+    this._form.style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
     setTimeout(() => {
-      this._eventEdit.getElement().style.animation = ``;
-      this._eventEdit.getElement().querySelector(`form`).style.border = `none`;
+      this._form.style.animation = ``;
+      this._form.style.border = `none`;
     }, ANIMATION_TIMEOUT);
   }
   _unbind(type) {
     this._getActiveFormElements();
     switch (type) {
       case `delete`:
-        this._eventEdit.getElement().querySelector(`.event__reset-btn `).textContent = `Delete..`;
+        this._resetButton.textContent = `Delete..`;
         break;
       case `change`:
-        this._eventEdit.getElement().querySelector(`.event__save-btn `).textContent = `Save`;
+        this._submitButton.textContent = `Save`;
         break;
     }
   }

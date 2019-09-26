@@ -30,10 +30,10 @@ const api = new API({
 });
 
 
-const onDataChange = (actionType, onError, data, element) => {
+const onDataChange = (actionType, data, onError, element) => {
   switch (actionType) {
     case `delete`:
-      api.deleteEvent(element.id)
+      api.deleteEvent(data.id)
         .then(() => api.getEvents())
         .then((events) => {
           stats.update(events);
@@ -43,7 +43,7 @@ const onDataChange = (actionType, onError, data, element) => {
           info = renderInfo(events);
         })
         .catch(() => {
-          onError();
+          onError(`delete`);
         });
       break;
     case `change`:
@@ -63,16 +63,16 @@ const onDataChange = (actionType, onError, data, element) => {
       break;
     case `create`:
       api.createEvent(data)
-        .then(() => remove(element))
-        .then(() => api.getEvents())
-        .then((events) => {
-          stats.update(events);
+      .then(() => api.getEvents())
+      .then((events) => {
+        stats.update(events);
 
-          tripController.init(events);
-          tripInfoCost.innerHTML = getPrice(events);
-          info.remove();
-          info = renderInfo(events);
-        })
+        tripController.init(events);
+        tripInfoCost.innerHTML = getPrice(events);
+        info.remove();
+        info = renderInfo(events);
+      })
+      .then(() => remove(element))
         .catch(() => {
           onError(`change`);
         });
