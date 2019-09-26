@@ -52,7 +52,7 @@ export const API = class {
     const dataRAW = ModelEvent.toRAW(data);
 
     return this._load({
-      url: `${this._url}poirnts/${id}`,
+      url: `${this._url}points/${id}`,
       method: `PUT`,
       body: JSON.stringify(dataRAW),
       headers: new Headers({'Content-Type': `application/json`})

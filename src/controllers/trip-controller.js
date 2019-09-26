@@ -92,7 +92,10 @@ export default class TripController {
       return;
     }
     const defaultEvent = {
-      type: ``,
+      type: {
+        id: `bus`,
+        title: `Bus to`
+      },
       destination: ``,
       price: 0,
       start: new Date(),

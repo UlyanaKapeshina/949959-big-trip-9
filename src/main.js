@@ -2,6 +2,7 @@ import Menu from './components/menu.js';
 import Filters from './components/filters.js';
 import TripInfo from './components/trip-info.js';
 import Stats from './components/stats.js';
+import LoadingMessage from './components/loading-message.js';
 import TripController from './controllers/trip-controller.js';
 import {
   API
@@ -14,7 +15,8 @@ import {
 } from "./util.js";
 import {
   render,
-  RenderPosition
+  RenderPosition,
+  ActionType
 } from "./util.js";
 
 const tripControls = document.querySelector(`.trip-controls`);
@@ -29,10 +31,9 @@ const api = new API({
   authorization: AUTORIZATION
 });
 
-
 const onDataChange = (actionType, data, onError, element) => {
   switch (actionType) {
-    case `delete`:
+    case ActionType.DELETE:
       api.deleteEvent(data.id)
         .then(() => api.getEvents())
         .then((events) => {
@@ -43,10 +44,10 @@ const onDataChange = (actionType, data, onError, element) => {
           info = renderInfo(events);
         })
         .catch(() => {
-          onError(`delete`);
+          onError();
         });
       break;
-    case `change`:
+    case ActionType.CHANGE:
       api.changeEvent(data.id, data)
         .then(() => api.getEvents())
         .then((events) => {
@@ -58,23 +59,23 @@ const onDataChange = (actionType, data, onError, element) => {
           info = renderInfo(events);
         })
         .catch(() => {
-          onError(`change`);
+          onError();
         });
       break;
-    case `create`:
+    case ActionType.CREATE:
       api.createEvent(data)
-      .then(() => api.getEvents())
-      .then((events) => {
-        stats.update(events);
+        .then(() => api.getEvents())
+        .then((events) => {
+          stats.update(events);
 
-        tripController.init(events);
-        tripInfoCost.innerHTML = getPrice(events);
-        info.remove();
-        info = renderInfo(events);
-      })
-      .then(() => remove(element))
+          tripController.init(events);
+          tripInfoCost.innerHTML = getPrice(events);
+          info.remove();
+          info = renderInfo(events);
+        })
+        .then(() => remove(element))
         .catch(() => {
-          onError(`change`);
+          onError();
         });
   }
 };
@@ -89,16 +90,18 @@ const renderInfo = (events) => {
 const menu = new Menu();
 const filters = new Filters(filtersNames);
 const stats = new Stats();
+const loadingMessage = new LoadingMessage();
 const tripController = new TripController(tripEvents, onDataChange);
 
 render(tripControls.querySelector(`h2`), menu.getElement(), RenderPosition.AFTER);
 render(tripControls, filters.getElement(), RenderPosition.BEFOREEND);
 render(tripEvents, stats.getElement(), RenderPosition.BEFOREEND);
+render(tripEvents, loadingMessage.getElement(), RenderPosition.BEFOREEND);
 
 let info;
 let allOffers;
 let allDestinations;
-Promise.all([api.getOffers(), api.getDestinations(), api.getEvents()])
+(Promise.all([api.getOffers(), api.getDestinations(), api.getEvents()])
   .then(([offers, destinations, events]) => {
     allOffers = offers;
     allDestinations = destinations;
@@ -107,7 +110,11 @@ Promise.all([api.getOffers(), api.getDestinations(), api.getEvents()])
     tripController.init(events);
     tripInfoCost.innerHTML = getPrice(events);
     info = renderInfo(events);
-  });
+
+  }))
+.then(() => {
+  remove(loadingMessage.getElement());
+});
 
 export {
   allOffers,

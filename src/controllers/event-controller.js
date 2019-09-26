@@ -3,7 +3,9 @@ import EventEdit from './../components/event-edit.js';
 import {
   render,
   remove,
-  RenderPosition
+  RenderPosition,
+  ActionType,
+  ModeType
 } from "./../util.js";
 import {
   allOffers,
@@ -31,7 +33,7 @@ export default class EventController {
 
     let currentView = this._event.getElement();
     let position = RenderPosition.BEFOREEND;
-    if (mode === `add`) {
+    if (mode === ModeType.ADD) {
       currentView = this._eventEdit.getElement().querySelector(`form`);
       position = RenderPosition.AFTER;
       currentView.classList.add(`trip-events__item`);
@@ -54,7 +56,7 @@ export default class EventController {
 
       document.addEventListener(`keydown`, onEscKeydown);
     });
-    if (mode === `default`) {
+    if (mode === ModeType.DEFAULT) {
       this._eventEdit.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
         this._container.replaceChild(this._event.getElement(), this._eventEdit.getElement());
         document.removeEventListener(`keydown`, onEscKeydown);
@@ -63,12 +65,12 @@ export default class EventController {
 
     this._eventEdit.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, (evt) => {
       evt.preventDefault();
-      if (mode === `add`) {
+      if (mode === ModeType.ADD) {
         this._onDataChange();
         remove(currentView);
       } else {
-        this._bind(`delete`);
-        this._onDataChange(`delete`, this._eventData, this.onError.bind(this));
+        this._bind(ActionType.DELETE);
+        this._onDataChange(ActionType.DELETE, this._eventData, this.onError.bind(this, ActionType.DELETE));
       }
       document.removeEventListener(`keydown`, onEscKeydown);
     });
@@ -97,9 +99,9 @@ export default class EventController {
       });
       this._eventData.isFavorite = formData.get(`event-favorite`) === `on` ? true : false;
 
-      this._bind(`change`);
+      this._bind(ActionType.CHANGE);
 
-      this._onDataChange(mode === `add` ? `create` : `change`, this._eventData, this.onError.bind(this), currentView);
+      this._onDataChange(mode === ModeType.ADD ? ActionType.CREATE : ActionType.CHANGE, this._eventData, this.onError.bind(this, ActionType.CHANGE), currentView);
       document.removeEventListener(`keydown`, onEscKeydown);
     });
     render(this._container, currentView, position);
@@ -123,10 +125,10 @@ export default class EventController {
   _bind(type) {
     this._getDisabledFormElements();
     switch (type) {
-      case `delete`:
+      case ActionType.DELETE:
         this._resetButton.textContent = `Deleting..`;
         break;
-      case `change`:
+      case ActionType.CHANGE:
         this._submitButton.textContent = `Saving..`;
         break;
     }
@@ -152,10 +154,10 @@ export default class EventController {
   _unbind(type) {
     this._getActiveFormElements();
     switch (type) {
-      case `delete`:
+      case ActionType.DELETE:
         this._resetButton.textContent = `Delete..`;
         break;
-      case `change`:
+      case ActionType.CHANGE:
         this._submitButton.textContent = `Save`;
         break;
     }

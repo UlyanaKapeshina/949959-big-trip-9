@@ -52,6 +52,15 @@ export const createElement = (template) => {
   newElement.innerHTML = template;
   return newElement.firstChild;
 };
+export const ActionType = {
+  DELETE: `delete`,
+  CREATE: `create`,
+  CHANGE: `change`
+};
+export const ModeType = {
+  ADD: `add`,
+  DEFAULT: `default`,
+};
 export const RenderPosition = {
   BEFOREEND: `beforeend`,
   AFTERBEGIN: `afterbegin`,
