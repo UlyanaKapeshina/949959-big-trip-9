@@ -8,7 +8,8 @@ import {
   remove
 } from './../util.js';
 import {
-  getEventsInDays
+  getEventsInDays,
+  TYPES_OF_TRANSFER
 } from './../util.js';
 
 export default class TripController {
@@ -88,14 +89,8 @@ export default class TripController {
   }
 
   createEvent(addButton) {
-    if (this._creatingEvent) {
-      return;
-    }
     const defaultEvent = {
-      type: {
-        id: `bus`,
-        title: `Bus to`
-      },
+      type: TYPES_OF_TRANSFER[0],
       destination: ``,
       price: 0,
       start: new Date(),
@@ -111,7 +106,6 @@ export default class TripController {
     this._addButton = addButton;
     const eventsListContainer = this._container.querySelector(`.trip-sort`);
     this._creatingEvent = new EventController(defaultEvent, `add`, eventsListContainer, (...args) => {
-      this._creatingEvent = null;
       this._addButton.disabled = false;
       this._onDataChange(...args);
     }, this.onChangeView);

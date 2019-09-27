@@ -78,8 +78,6 @@ export default class EventController {
     this._eventEdit.getElement().querySelector(`.event--edit`).addEventListener(`submit`, (evt) => {
       evt.preventDefault();
       const formData = new FormData(evt.target);
-
-
       this._eventData.id = this._eventData.id ? this._eventData.id : ``;
       this._eventData.type = formData.get(`event-type`);
       this._eventData.destination = {

@@ -121,7 +121,7 @@ export {
   allDestinations
 };
 
-const onAddButtonClick = () => {
+const onAddEventButtonClick = () => {
   addButton.disabled = true;
   tripController.createEvent(addButton);
   tripController.onChangeView();
@@ -156,5 +156,5 @@ const onFilterClick = () => {
 };
 
 menu.getElement().addEventListener(`click`, onMenuClick);
-addButton.addEventListener(`click`, onAddButtonClick);
+addButton.addEventListener(`click`, onAddEventButtonClick);
 filters.getElement().addEventListener(`change`, onFilterClick);
