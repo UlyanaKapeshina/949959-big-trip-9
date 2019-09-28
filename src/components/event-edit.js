@@ -8,6 +8,7 @@ import {
   allDestinations
 } from "./../main.js";
 import AbstractComponent from "./abstract-component.js";
+import moment from 'moment';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
@@ -33,27 +34,26 @@ export default class EventEdit extends AbstractComponent {
     this._isFavorite = isFavorite;
     this._subscribeOnTypeChange();
     this._subscribeOnCityChange();
-    this._addFlatpickr();
+    this.addFlatpickr();
   }
-  _addFlatpickr() {
+  addFlatpickr() {
     const start = flatpickr((this.getElement().querySelector(`#event-start-time-1`)), {
-      altInput: true,
-      altFormat: `d.m.y H:i`,
+      dateFormat: `d.m.y H:i`,
+      allowInput: true,
       enableTime: true,
       defaultDate: this._start,
-
       onChange(selectedDates) {
         end.set(`minDate`, selectedDates[0]);
       }
     });
     const end = flatpickr((this.getElement().querySelector(`#event-end-time-1`)), {
-      altInput: true,
-      altFormat: `d.m.y H:i`,
+      dateFormat: `d.m.y H:i`,
+      allowInput: true,
       enableTime: true,
       defaultDate: this._end,
       onChange(selectedDates) {
         start.set(`maxDate`, selectedDates[0]);
-      }
+      },
     });
   }
 
@@ -64,7 +64,7 @@ export default class EventEdit extends AbstractComponent {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${this._type.id ? this._type.id : TYPES_OF_TRANSFER[0].type}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${this._type.id}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -88,9 +88,9 @@ export default class EventEdit extends AbstractComponent {
 
         <div class="event__field-group  event__field-group--destination">
         <label class="event__label  event__type-output" for="event-destination-1">
-          ${this._type.title ? this._type.title : TYPES_OF_TRANSFER[0].title}
+          ${this._type.title}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1"  name="event-destination" value="${this._destination.city}" list="destination-list-1"  required>
+        <input class="event__input  event__input--destination" id="event-destination-1"  name="event-destination" value="${this._destination.city ? this._destination.city : ``}" list="destination-list-1"  required>
         <datalist id="destination-list-1">
           ${allDestinations ? allDestinations.map((destination) => `<option value="${destination.city}"></option>`).join(``) : ``}
         </datalist>
@@ -101,19 +101,19 @@ export default class EventEdit extends AbstractComponent {
       <label class="visually-hidden" for="event-start-time-1">
         From
       </label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="">
+      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${moment(this._start).format(`D.MM.YY h:mm`)}" required readonly>
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">
         To
       </label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="">
+      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${moment(this._end).format(`D.MM.YY h:mm`)}" required readonly>
     </div>
         <div class="event__field-group  event__field-group--price">
           <label class="event__label" for="event-price-1">
             <span class="visually-hidden">${this._price}</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${this._price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" min="0" max="1000000" value="${this._price}" required>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -163,7 +163,9 @@ export default class EventEdit extends AbstractComponent {
     </form>
     </li>`;
   }
+
   _subscribeOnTypeChange() {
+    const eventDetailsContainer = this.getElement().querySelector(`.event__details`);
     const label = this.getElement().querySelector(`.event__type-output`);
     const img = this.getElement().querySelector(`.event__type-icon`);
     let offersContainer = this.getElement().querySelector(`.event__available-offers`);
@@ -174,9 +176,9 @@ export default class EventEdit extends AbstractComponent {
       img.src = `img/icons/${newType.id}.png`;
       const offers = allOffers.find((it) => it.type === newType.id).offers;
       if (!offersContainer) {
-        const eventDetailsContainer = this.getElement().querySelector(`.event__details`);
+
         eventDetailsContainer.insertAdjacentHTML(`afterbegin`, this._getOffersContainer());
-        offersContainer = this.getElement().querySelector(`.event__available-offers`);
+        offersContainer = eventDetailsContainer.querySelector(`.event__available-offers`);
       }
       offersContainer.innerHTML = this._getOffers(offers);
     };
