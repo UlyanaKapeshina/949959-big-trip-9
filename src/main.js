@@ -71,9 +71,9 @@ const onDataChange = (actionType, data, onError, element) => {
           tripController.init(events);
           tripInfoCost.innerHTML = getPrice(events);
           info.remove();
-          info = renderInfo(events);
+          info = renderInfo(events)
+          remove(element);
         })
-        .then(() => remove(element))
         .catch(() => {
           onError();
         });

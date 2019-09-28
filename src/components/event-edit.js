@@ -88,7 +88,7 @@ export default class EventEdit extends AbstractComponent {
 
         <div class="event__field-group  event__field-group--destination">
         <label class="event__label  event__type-output" for="event-destination-1">
-          ${this._type.title ? this._type.title : TYPES_OF_TRANSFER[0].title}
+          ${this._type.title}
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1"  name="event-destination" value="${this._destination.city ? this._destination.city : ``}" list="destination-list-1"  required>
         <datalist id="destination-list-1">
