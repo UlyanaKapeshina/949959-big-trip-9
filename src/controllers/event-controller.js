@@ -7,15 +7,13 @@ import {
   ActionType,
   ModeType
 } from "./../util.js";
+import moment from 'moment';
 import {
-  allOffers,
   allDestinations
 } from './../main.js';
 export default class EventController {
   constructor(eventData, mode, container, onDataChange, onChangeView) {
     this._container = container;
-    // this._addButton = addButton;
-
     this._eventData = eventData;
     this._event = new Event(eventData);
     this._eventEdit = new EventEdit(eventData);
@@ -52,13 +50,15 @@ export default class EventController {
 
     this._event.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
       this._onChangeView();
+      // this._eventEdit.addFlatpickr();
       this._container.replaceChild(this._eventEdit.getElement(), this._event.getElement());
-
       document.addEventListener(`keydown`, onEscKeydown);
     });
     if (mode === ModeType.DEFAULT) {
       this._eventEdit.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
         this._container.replaceChild(this._event.getElement(), this._eventEdit.getElement());
+        this._eventEdit.getElement().querySelector(`form`).reset();
+        // this._eventEdit.addFlatpickr();
         document.removeEventListener(`keydown`, onEscKeydown);
       });
     }
@@ -86,9 +86,9 @@ export default class EventController {
         pictures: allDestinations.find((it) => it.city === formData.get(`event-destination`)).pictures,
       };
       this._eventData.price = +formData.get(`event-price`);
-      this._eventData.start = new Date(formData.get(`event-start-time`));
-      this._eventData.end = new Date(formData.get(`event-end-time`));
-      this._eventData.offers = allOffers.find((it) => it.type === formData.get(`event-type`)).offers.map((it) => {
+      this._eventData.start = moment(formData.get(`event-start-time`), `D.MM.YY h:mm`).format();
+      this._eventData.end = moment(formData.get(`event-end-time`), `D.MM.YY h:mm`).format();
+      this._eventData.offers = this._eventData.offers.map((it) => {
         return {
           title: it.title,
           price: it.price,

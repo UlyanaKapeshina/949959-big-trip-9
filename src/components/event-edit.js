@@ -8,6 +8,7 @@ import {
   allDestinations
 } from "./../main.js";
 import AbstractComponent from "./abstract-component.js";
+import moment from 'moment';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
@@ -33,27 +34,26 @@ export default class EventEdit extends AbstractComponent {
     this._isFavorite = isFavorite;
     this._subscribeOnTypeChange();
     this._subscribeOnCityChange();
-    this._addFlatpickr();
+    this.addFlatpickr();
   }
-  _addFlatpickr() {
+  addFlatpickr() {
     const start = flatpickr((this.getElement().querySelector(`#event-start-time-1`)), {
-      altInput: true,
-      altFormat: `d.m.y H:i`,
+      dateFormat: `d.m.y H:i`,
+      allowInput: true,
       enableTime: true,
       defaultDate: this._start,
-
       onChange(selectedDates) {
         end.set(`minDate`, selectedDates[0]);
       }
     });
     const end = flatpickr((this.getElement().querySelector(`#event-end-time-1`)), {
-      altInput: true,
-      altFormat: `d.m.y H:i`,
+      dateFormat: `d.m.y H:i`,
+      allowInput: true,
       enableTime: true,
       defaultDate: this._end,
       onChange(selectedDates) {
         start.set(`maxDate`, selectedDates[0]);
-      }
+      },
     });
   }
 
@@ -101,19 +101,19 @@ export default class EventEdit extends AbstractComponent {
       <label class="visually-hidden" for="event-start-time-1">
         From
       </label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="">
+      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${moment(this._start).format(`D.MM.YY h:mm`)}" required readonly>
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">
         To
       </label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="">
+      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${moment(this._end).format(`D.MM.YY h:mm`)}" required readonly>
     </div>
         <div class="event__field-group  event__field-group--price">
           <label class="event__label" for="event-price-1">
             <span class="visually-hidden">${this._price}</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${this._price}" required>
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" min="0" max="1000000" value="${this._price}" required>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -163,6 +163,7 @@ export default class EventEdit extends AbstractComponent {
     </form>
     </li>`;
   }
+
   _subscribeOnTypeChange() {
     const eventDetailsContainer = this.getElement().querySelector(`.event__details`);
     const label = this.getElement().querySelector(`.event__type-output`);
@@ -249,45 +250,4 @@ export default class EventEdit extends AbstractComponent {
   _getPhotos(destination) {
     return destination.pictures.map((it) => `<img class="event__photo" src=${it.url} alt="${it.alt}">`).join(``);
   }
-  // _getDisabledFormElements() {
-  //   Array.from(this.getElement().querySelectorAll(`input, button`)).forEach((it) => {
-  //     it.disabled = true;
-  //   });
-  // }
-  // _getActiveFormElements() {
-  //   Array.from(this.getElement().querySelectorAll(`input, button`)).forEach((it) => {
-  //     it.disabled = false;
-  //   });
-  // }
-  // bind(type) {
-  //   this._getDisabledFormElements();
-  //   switch (type) {
-  //     case `delete`:
-  //       this.getElement().querySelector(`.event__reset-btn `).textContent = `Deleting..`;
-  //       break;
-  //     case `change`:
-  //       this.getElement().querySelector(`.event__save-btn `).textContent = `Saving..`;
-  //       break;
-  //   }
-  // }
-  // shake() {
-  //   const ANIMATION_TIMEOUT = 600;
-  //   this.getElement().querySelector(`form`).style.border = `2px solid red`;
-  //   this.getElement().style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
-  //   setTimeout(() => {
-  //     this.getElement().style.animation = ``;
-  //     this.getElement().querySelector(`form`).style.border = `none`;
-  //   }, ANIMATION_TIMEOUT);
-  // }
-  // unbind(type) {
-  //   this._getActiveFormElements();
-  //   switch (type) {
-  //     case `delete`:
-  //       this.getElement().querySelector(`.event__reset-btn `).textContent = `Delete..`;
-  //       break;
-  //     case `change`:
-  //       this.getElement().querySelector(`.event__save-btn `).textContent = `Save`;
-  //       break;
-  //   }
-  // }
 }

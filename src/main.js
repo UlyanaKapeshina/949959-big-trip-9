@@ -52,7 +52,6 @@ const onDataChange = (actionType, data, onError, element) => {
         .then(() => api.getEvents())
         .then((events) => {
           stats.update(events);
-
           tripController.init(events);
           tripInfoCost.innerHTML = getPrice(events);
           info.remove();
@@ -71,7 +70,7 @@ const onDataChange = (actionType, data, onError, element) => {
           tripController.init(events);
           tripInfoCost.innerHTML = getPrice(events);
           info.remove();
-          info = renderInfo(events)
+          info = renderInfo(events);
           remove(element);
         })
         .catch(() => {

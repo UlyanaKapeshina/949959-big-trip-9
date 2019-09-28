@@ -54,7 +54,7 @@ export default class ModelEvent {
           'title': it.title,
           'price': it.price,
           'accepted': it.isChecked,
-        }
+        };
       }),
       'is_favorite': data.isFavorite
     };
