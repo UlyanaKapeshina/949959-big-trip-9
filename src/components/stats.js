@@ -47,7 +47,6 @@ export default class Stats extends AbstractComponent {
 
     const types = Array.from(new Set(eventsData.map((it) => it.type.id.toUpperCase())));
     const money = eventsData.map((it) => it.price);
-    // this._getData(eventsData);
     moneyCtx.height = BAR_HEIGHT * types.length > MIN_CTX_HEIGHT ? BAR_HEIGHT * types.length : MIN_CTX_HEIGHT;
     Chart.defaults.global.defaultFontColor = `black`;
     Chart.defaults.global.defaultFontFamily = `"Montserrat", "Arial", sans-serif`;
