@@ -114,3 +114,6 @@ export const TYPES_OF_ACTIVITY = [{
 },
 ];
 export const TYPES_OF_EVENT = TYPES_OF_TRANSFER.concat(TYPES_OF_ACTIVITY);
+export const objectToArray = (object) => {
+  return Object.keys(object).map((id) => object[id]);
+};
