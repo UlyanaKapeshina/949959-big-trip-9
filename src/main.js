@@ -8,7 +8,6 @@ import {
   API
 } from './api.js';
 import {
-
   filtersNames,
   getPrice,
   remove

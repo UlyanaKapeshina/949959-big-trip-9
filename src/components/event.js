@@ -55,7 +55,6 @@ export default class Event extends AbstractComponent {
       &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
      </li>`).join(``)}
       </ul>
-
       <button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
       </button>

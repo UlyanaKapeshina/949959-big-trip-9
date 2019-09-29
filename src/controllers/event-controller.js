@@ -39,7 +39,6 @@ export default class EventController {
       currentView.querySelector(`.event__reset-btn`).textContent = `Cancel`;
     }
 
-
     const onEscKeydown = (evt) => {
       if (evt.key === `Esc` || evt.key === `Escape`) {
         evt.preventDefault();
@@ -50,7 +49,6 @@ export default class EventController {
 
     this._event.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
       this._onChangeView();
-      // this._eventEdit.addFlatpickr();
       this._container.replaceChild(this._eventEdit.getElement(), this._event.getElement());
       document.addEventListener(`keydown`, onEscKeydown);
     });
@@ -58,7 +56,6 @@ export default class EventController {
       this._eventEdit.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
         this._container.replaceChild(this._event.getElement(), this._eventEdit.getElement());
         this._eventEdit.getElement().querySelector(`form`).reset();
-        // this._eventEdit.addFlatpickr();
         document.removeEventListener(`keydown`, onEscKeydown);
       });
     }

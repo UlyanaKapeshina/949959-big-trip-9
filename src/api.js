@@ -59,7 +59,6 @@ export const API = class {
     })
     .then((response) => response.json())
     .then(ModelEvent.parseEvent);
-
   }
 
   _checkStatus(response) {
