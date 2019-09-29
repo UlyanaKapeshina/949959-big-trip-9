@@ -118,9 +118,7 @@ export default class Stats extends AbstractComponent {
       }
 
     });
-    // moneyChart.data.labels = types;
-    // moneyChart.data.datasets.data = money;
-    // moneyChart.update();
+
     const transfers = TYPES_OF_TRANSFER.map((it) => it.id);
     const events = eventsData.filter((event) => transfers.find((it) => event.type.id === it));
     const transportCount = events.reduce((acc, event) => {

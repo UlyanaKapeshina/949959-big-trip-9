@@ -1,6 +1,5 @@
 export default class ModelDestinations {
   constructor(data) {
-
     this.city = data[`name`];
     this.description = data[`description`];
     this.pictures = data[`pictures`].map((it) => {
