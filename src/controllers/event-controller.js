@@ -39,6 +39,7 @@ export default class EventController {
       currentView.querySelector(`.event__reset-btn`).textContent = `Cancel`;
     }
 
+
     const onEscKeydown = (evt) => {
       if (evt.key === `Esc` || evt.key === `Escape`) {
         evt.preventDefault();
@@ -49,6 +50,7 @@ export default class EventController {
 
     this._event.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
       this._onChangeView();
+      // this._eventEdit.addFlatpickr();
       this._container.replaceChild(this._eventEdit.getElement(), this._event.getElement());
       document.addEventListener(`keydown`, onEscKeydown);
     });
@@ -56,6 +58,7 @@ export default class EventController {
       this._eventEdit.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
         this._container.replaceChild(this._event.getElement(), this._eventEdit.getElement());
         this._eventEdit.getElement().querySelector(`form`).reset();
+        // this._eventEdit.addFlatpickr();
         document.removeEventListener(`keydown`, onEscKeydown);
       });
     }
@@ -85,11 +88,11 @@ export default class EventController {
       this._eventData.price = +formData.get(`event-price`);
       this._eventData.start = moment(formData.get(`event-start-time`), `D.MM.YY h:mm`).format();
       this._eventData.end = moment(formData.get(`event-end-time`), `D.MM.YY h:mm`).format();
-      this._eventData.offers = this._eventData.offers.map((it) => {
+      this._eventData.offers = Array.from(this._eventEdit.getElement().querySelectorAll(`.event__offer-selector`)).map((it) => {
         return {
-          title: it.title,
-          price: it.price,
-          accepted: formData.get(`event-offer-${it.title}`) === `on` ? true : false
+          title: it.querySelector(`.event__offer-title`).textContent,
+          price: +it.querySelector(`.event__offer-price`).textContent,
+          accepted: it.querySelector(`.event__offer-checkbox`).checked,
         };
       });
       this._eventData.isFavorite = formData.get(`event-favorite`) === `on` ? true : false;

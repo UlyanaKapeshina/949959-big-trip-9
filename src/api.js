@@ -3,7 +3,7 @@ import ModelEvent from './models/model-event.js';
 import ModelOffers from './models/model-event.js';
 import ModelDestinations from './models/model-destinations';
 
-export const API = class {
+export default class API {
   constructor({url, authorization}) {
     this._url = url;
     this._authorization = authorization;
@@ -60,6 +60,15 @@ export const API = class {
     .then((response) => response.json())
     .then(ModelEvent.parseEvent);
   }
+  syncEvents(events) {
+    return this._load({
+      url: `${this._url}points/sync`,
+      method: `POST`,
+      body: JSON.stringify(events),
+      headers: new Headers({'Content-Type': `application/json`})
+    })
+    .then((response) => response.json());
+  }
 
   _checkStatus(response) {
     if (response.status >= 200 && response.status < 300) {
@@ -78,4 +87,4 @@ export const API = class {
       throw error;
     });
   }
-};
+}
