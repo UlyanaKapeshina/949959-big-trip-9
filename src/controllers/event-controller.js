@@ -5,7 +5,8 @@ import {
   remove,
   RenderPosition,
   ActionType,
-  ModeType
+  ModeType,
+  TYPES_OF_EVENT
 } from "./../util.js";
 import moment from 'moment';
 import {
@@ -79,7 +80,10 @@ export default class EventController {
       evt.preventDefault();
       const formData = new FormData(evt.target);
       this._eventData.id = this._eventData.id ? this._eventData.id : ``;
-      this._eventData.type = formData.get(`event-type`);
+      this._eventData.type = {
+        id: formData.get(`event-type`),
+        title: TYPES_OF_EVENT.find((it) => it.id === formData.get(`event-type`)).title
+      };
       this._eventData.destination = {
         city: formData.get(`event-destination`),
         description: allDestinations.find((it) => it.city === formData.get(`event-destination`)).description,

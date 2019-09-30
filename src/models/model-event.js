@@ -3,10 +3,10 @@ import {
 } from './../util.js';
 export default class ModelEvent {
   constructor(data) {
-    this.id = data[`id`];
+    this.id = data[`id`] || ``;
     this.type = {
-      id: data[`type`],
-      title: TYPES_OF_EVENT.find((it) => it.id === data[`type`]).title
+      id: data[`type`] || data[`type`][`id`],
+      title: TYPES_OF_EVENT.find((it) => it.id === data[`type`]).title || data[`type`][`title`]
     };
     this.destination = {
       city: data[`destination`][`name`],
@@ -21,7 +21,13 @@ export default class ModelEvent {
     this.price = data[`base_price`];
     this.start = new Date(data[`date_from`]);
     this.end = new Date(data[`date_to`]);
-    this.offers = data[`offers`];
+    this.offers = data[`offers`].map((it) => {
+      return {
+        title: it[`title`],
+        price: it[`price`],
+        isChecked: it[`accepted`],
+      };
+    });
     this.isFavorite = data[`is_favorite`];
   }
   static parseEvent(data) {

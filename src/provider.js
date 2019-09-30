@@ -18,7 +18,8 @@ export default class Provider {
         });
     } else {
       const events = objectToArray(this._store.getAll());
-      return Promise.resolve(ModelEvent.parseEvents(events));
+      const a = ModelEvent.parseEvents(events);
+      return Promise.resolve(a);
     }
   }
   createEvent(newEvent) {
@@ -30,7 +31,8 @@ export default class Provider {
         });
     } else {
       this._store.setItem(this._generateId(), newEvent);
-      return Promise.resolve(ModelEvent.parseEvent(newEvent));
+      // const a = ModelEvent.parseEvent(newEvent);
+      return Promise.resolve(newEvent);
     }
 
   }
