@@ -49,13 +49,7 @@ export default class ModelEvent {
       'base_price': data.price,
       'date_from': data.start,
       'date_to': data.end,
-      'offers': data.offers.map((it) => {
-        return {
-          'title': it.title,
-          'price': it.price,
-          'accepted': it.isChecked,
-        };
-      }),
+      'offers': data.offers,
       'is_favorite': data.isFavorite
     };
   }

@@ -89,7 +89,7 @@ export default class EventController {
         return {
           title: it.title,
           price: it.price,
-          isChecked: formData.get(`event-offer-${it.title}`) === `on` ? true : false
+          accepted: formData.get(`event-offer-${it.title}`) === `on` ? true : false
         };
       });
       this._eventData.isFavorite = formData.get(`event-favorite`) === `on` ? true : false;
