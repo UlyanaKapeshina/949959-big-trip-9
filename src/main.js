@@ -4,9 +4,7 @@ import TripInfo from './components/trip-info.js';
 import Stats from './components/stats.js';
 import LoadingMessage from './components/loading-message.js';
 import TripController from './controllers/trip-controller.js';
-import {
-  API
-} from './api.js';
+import API from './api.js';
 import {
   filtersNames,
   getPrice,
