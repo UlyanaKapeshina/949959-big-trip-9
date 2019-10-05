@@ -2,6 +2,7 @@ import AbstractComponent from "./abstract-component.js";
 const OFFERS_COUNT = 3;
 import moment from 'moment';
 import 'moment-duration-format';
+import {TYPES_OF_EVENT} from "./../util.js";
 export default class Event extends AbstractComponent {
   constructor({
     type,
@@ -12,7 +13,10 @@ export default class Event extends AbstractComponent {
     offers
   }) {
     super();
-    this._type = type;
+    this._type = {
+      id: type,
+      title: TYPES_OF_EVENT.find((it) => it.id === type).title
+    };
     this._city = destination.city;
     this._price = price;
     this._start = new Date(start);

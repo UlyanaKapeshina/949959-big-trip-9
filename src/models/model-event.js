@@ -1,13 +1,7 @@
-import {
-  TYPES_OF_EVENT
-} from './../util.js';
 export default class ModelEvent {
   constructor(data) {
-    this.id = data[`id`];
-    this.type = {
-      id: data[`type`],
-      title: TYPES_OF_EVENT.find((it) => it.id === data[`type`]).title
-    };
+    this.id = data[`id`] || ``;
+    this.type = data[`type`];
     this.destination = {
       city: data[`destination`][`name`],
       description: data[`destination`][`description`],

@@ -5,6 +5,8 @@ import Stats from './components/stats.js';
 import LoadingMessage from './components/loading-message.js';
 import TripController from './controllers/trip-controller.js';
 import API from './api.js';
+import Store from './store.js';
+import Provider from './provider.js';
 import {
   filtersNames,
   getPrice,
@@ -23,30 +25,40 @@ const addButton = document.querySelector(`.trip-main__event-add-btn`);
 const tripInfoCost = document.querySelector(`.trip-info__cost`).querySelector(`span`);
 const AUTORIZATION = `Basic dXNlckBwYXNzd29yZAo=${Math.random()}`;
 const URL = `https://htmlacademy-es-9.appspot.com/big-trip/`;
+const Keys = {
+  EVENTS: `events-store-key`,
+  OFFERS: `offers-store-key`,
+  DESTINATIONS: `destinations-store-key`,
+};
+// const EVENTS = `tasks-store-key`;
+// const OFFERS_STORE_KEY = `tasks-store-key`;
+// const DESTINATIONS_STORE_KEY = `tasks-store-key`;
 const api = new API({
   url: URL,
   authorization: AUTORIZATION
 });
+const store = new Store(Keys, window.localStorage);
+const provider = new Provider(api, store);
 
 const onDataChange = (actionType, data, onError, element) => {
   switch (actionType) {
     case ActionType.DELETE:
-      api.deleteEvent(data.id)
-        .then(() => api.getEvents())
+      provider.deleteEvent(data.id)
+        .then(() => provider.getEvents())
         .then((events) => {
-          stats.update(events);
           tripController.init(events);
           tripInfoCost.innerHTML = getPrice(events);
           info.remove();
           info = renderInfo(events);
+          stats.update(events);
         })
         .catch(() => {
           onError();
         });
       break;
     case ActionType.CHANGE:
-      api.changeEvent(data.id, data)
-        .then(() => api.getEvents())
+      provider.changeEvent(data.id, data)
+        .then(() => provider.getEvents())
         .then((events) => {
           stats.update(events);
           tripController.init(events);
@@ -59,8 +71,8 @@ const onDataChange = (actionType, data, onError, element) => {
         });
       break;
     case ActionType.CREATE:
-      api.createEvent(data)
-        .then(() => api.getEvents())
+      provider.createEvent(data)
+        .then(() => provider.getEvents())
         .then((events) => {
           stats.update(events);
 
@@ -97,11 +109,10 @@ render(tripEvents, loadingMessage.getElement(), RenderPosition.BEFOREEND);
 let info;
 let allOffers;
 let allDestinations;
-(Promise.all([api.getOffers(), api.getDestinations(), api.getEvents()])
+(Promise.all([provider.getOffers(), provider.getDestinations(), provider.getEvents()])
   .then(([offers, destinations, events]) => {
     allOffers = offers;
     allDestinations = destinations;
-
     stats.getStatistics(events);
     tripController.init(events);
     tripInfoCost.innerHTML = getPrice(events);
@@ -146,6 +157,17 @@ const onMenuClick = (evt) => {
       stats.show();
   }
 };
+window.addEventListener(`offline`, () => {
+  document.title = `${document.title}[OFFLINE]`;
+});
+window.addEventListener(`online`, () => {
+  document.title = document.title.split(`[OFFLINE]`)[0];
+  provider.syncEvents()
+  .then(() => provider.getEvents())
+  .then((events) => {
+    tripController.init(events);
+  });
+});
 
 const onFilterClick = () => {
   tripController.init();

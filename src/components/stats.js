@@ -44,8 +44,8 @@ export default class Stats extends AbstractComponent {
     const timeCtx = this.getElement().querySelector(`.statistics__chart--time`);
     const BAR_HEIGHT = 55;
     const MIN_CTX_HEIGHT = 130;
-
-    const types = Array.from(new Set(eventsData.map((it) => it.type.id.toUpperCase())));
+    // TYPES_OF_EVENT.find((it) => it.id === type).title
+    const types = Array.from(new Set(eventsData.map((it) => it.type.toUpperCase())));
     const money = eventsData.map((it) => it.price);
     moneyCtx.height = BAR_HEIGHT * types.length > MIN_CTX_HEIGHT ? BAR_HEIGHT * types.length : MIN_CTX_HEIGHT;
     Chart.defaults.global.defaultFontColor = `black`;

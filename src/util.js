@@ -57,7 +57,7 @@ export const getPrice = ((eventsData) => {
   let price = 0;
   if (eventsData.length !== 0) {
     price = eventsData.map((event) => {
-      const offersPrice = Array.from(event.offers).reduce((a, b) => {
+      const offersPrice = event.offers.filter((it) => it.accepted).reduce((a, b) => {
         return a + b.price;
       }, 0);
       return event.price + offersPrice;
@@ -114,3 +114,6 @@ export const TYPES_OF_ACTIVITY = [{
 },
 ];
 export const TYPES_OF_EVENT = TYPES_OF_TRANSFER.concat(TYPES_OF_ACTIVITY);
+export const objectToArray = (object) => {
+  return Object.keys(object).map((id) => object[id]);
+};
