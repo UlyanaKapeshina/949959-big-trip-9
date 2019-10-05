@@ -172,7 +172,6 @@ export default class EventEdit extends AbstractComponent {
     const label = this.getElement().querySelector(`.event__type-output`);
     const img = this.getElement().querySelector(`.event__type-icon`);
     let offersContainer = this.getElement().querySelector(`.event__available-offers`);
-    //
     const onTypeChange = (evt) => {
       const newType = TYPES_OF_EVENT.find((it) => it.id === evt.target.value);
       label.textContent = newType.title;

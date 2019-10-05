@@ -47,7 +47,6 @@ export default class Stats extends AbstractComponent {
     // TYPES_OF_EVENT.find((it) => it.id === type).title
     const types = Array.from(new Set(eventsData.map((it) => it.type.toUpperCase())));
     const money = eventsData.map((it) => it.price);
-    // this._getData(eventsData);
     moneyCtx.height = BAR_HEIGHT * types.length > MIN_CTX_HEIGHT ? BAR_HEIGHT * types.length : MIN_CTX_HEIGHT;
     Chart.defaults.global.defaultFontColor = `black`;
     Chart.defaults.global.defaultFontFamily = `"Montserrat", "Arial", sans-serif`;
@@ -118,9 +117,7 @@ export default class Stats extends AbstractComponent {
       }
 
     });
-    // moneyChart.data.labels = types;
-    // moneyChart.data.datasets.data = money;
-    // moneyChart.update();
+
     const transfers = TYPES_OF_TRANSFER.map((it) => it.id);
     const events = eventsData.filter((event) => transfers.find((it) => event.type.id === it));
     const transportCount = events.reduce((acc, event) => {

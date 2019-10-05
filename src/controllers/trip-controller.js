@@ -89,7 +89,11 @@ export default class TripController {
 
   createEvent(addButton) {
     const defaultEvent = {
+<<<<<<< HEAD
       type: TYPES_OF_EVENT[0].id,
+=======
+      type: TYPES_OF_EVENT[9],
+>>>>>>> master
       destination: ``,
       price: 0,
       start: new Date(),
