@@ -11,6 +11,7 @@ import moment from 'moment';
 import {
   allDestinations
 } from './../main.js';
+const ANIMATION_TIMEOUT = 600;
 export default class EventController {
   constructor(eventData, mode, container, onDataChange, onChangeView) {
     this._container = container;
@@ -50,7 +51,6 @@ export default class EventController {
 
     this._event.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
       this._onChangeView();
-      // this._eventEdit.addFlatpickr();
       this._container.replaceChild(this._eventEdit.getElement(), this._event.getElement());
       document.addEventListener(`keydown`, onEscKeydown);
     });
@@ -58,7 +58,6 @@ export default class EventController {
       this._eventEdit.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
         this._container.replaceChild(this._event.getElement(), this._eventEdit.getElement());
         this._eventEdit.getElement().querySelector(`form`).reset();
-        // this._eventEdit.addFlatpickr();
         document.removeEventListener(`keydown`, onEscKeydown);
       });
     }
@@ -141,7 +140,6 @@ export default class EventController {
   }
 
   _shake() {
-    const ANIMATION_TIMEOUT = 600;
     this._form.style.border = `2px solid red`;
     this._form.style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
     setTimeout(() => {
