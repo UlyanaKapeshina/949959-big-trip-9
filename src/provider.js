@@ -30,7 +30,7 @@ export default class Provider {
           return event;
         });
     } else {
-      this._store.setItem(this._generateId(), newEvent);
+      this._store.setItem(this._generateId(), ModelEvent.toRAW(newEvent));
       // const a = ModelEvent.parseEvent(newEvent);
       return Promise.resolve(newEvent);
     }
@@ -40,7 +40,7 @@ export default class Provider {
     if (this._isOnline()) {
       return this._api.deleteEvent(id)
         .then(() => {
-          this._store.removeItem(event.id);
+          this._store.removeItem(id);
         });
     } else {
       this._store.removeItem(id);
@@ -56,7 +56,7 @@ export default class Provider {
           return event;
         });
     } else {
-      this._store.getItem(data.id, data);
+      this._store.setItem(data.id, ModelEvent.toRAW(data));
       return Promise.resolve(ModelEvent.parseEvent(data));
     }
   }
@@ -91,6 +91,6 @@ export default class Provider {
     return window.navigator.onLine;
   }
   _generateId() {
-    String(Date.now() + Math.random());
+    return String(Date.now() + Math.random());
   }
 }

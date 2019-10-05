@@ -46,11 +46,11 @@ const onDataChange = (actionType, data, onError, element) => {
       provider.deleteEvent(data.id)
         .then(() => provider.getEvents())
         .then((events) => {
-          stats.update(events);
           tripController.init(events);
           tripInfoCost.innerHTML = getPrice(events);
           info.remove();
           info = renderInfo(events);
+          stats.update(events);
         })
         .catch(() => {
           onError();
@@ -162,7 +162,11 @@ window.addEventListener(`offline`, () => {
 });
 window.addEventListener(`online`, () => {
   document.title = document.title.split(`[OFFLINE]`)[0];
-  provider.syncEvents();
+  provider.syncEvents()
+  .then(() => provider.getEvents())
+  .then((events) => {
+    tripController.init(events);
+  });
 });
 
 const onFilterClick = () => {

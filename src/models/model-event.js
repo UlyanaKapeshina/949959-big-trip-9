@@ -1,13 +1,7 @@
-import {
-  TYPES_OF_EVENT
-} from './../util.js';
 export default class ModelEvent {
   constructor(data) {
     this.id = data[`id`] || ``;
-    this.type = {
-      id: data[`type`] || data[`type`][`id`],
-      title: TYPES_OF_EVENT.find((it) => it.id === data[`type`]).title || data[`type`][`title`]
-    };
+    this.type = data[`type`];
     this.destination = {
       city: data[`destination`][`name`],
       description: data[`destination`][`description`],
@@ -21,13 +15,7 @@ export default class ModelEvent {
     this.price = data[`base_price`];
     this.start = new Date(data[`date_from`]);
     this.end = new Date(data[`date_to`]);
-    this.offers = data[`offers`].map((it) => {
-      return {
-        title: it[`title`],
-        price: it[`price`],
-        isChecked: it[`accepted`],
-      };
-    });
+    this.offers = data[`offers`];
     this.isFavorite = data[`is_favorite`];
   }
   static parseEvent(data) {
@@ -55,13 +43,7 @@ export default class ModelEvent {
       'base_price': data.price,
       'date_from': data.start,
       'date_to': data.end,
-      'offers': data.offers.map((it) => {
-        return {
-          'title': it.title,
-          'price': it.price,
-          'accepted': it.isChecked,
-        };
-      }),
+      'offers': data.offers,
       'is_favorite': data.isFavorite
     };
   }

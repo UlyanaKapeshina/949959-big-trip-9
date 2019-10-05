@@ -87,4 +87,4 @@ export default class API {
       throw error;
     });
   }
-};
+}

@@ -5,8 +5,7 @@ import {
   remove,
   RenderPosition,
   ActionType,
-  ModeType,
-  TYPES_OF_EVENT
+  ModeType
 } from "./../util.js";
 import moment from 'moment';
 import {
@@ -80,10 +79,7 @@ export default class EventController {
       evt.preventDefault();
       const formData = new FormData(evt.target);
       this._eventData.id = this._eventData.id ? this._eventData.id : ``;
-      this._eventData.type = {
-        id: formData.get(`event-type`),
-        title: TYPES_OF_EVENT.find((it) => it.id === formData.get(`event-type`)).title
-      };
+      this._eventData.type = formData.get(`event-type`);
       this._eventData.destination = {
         city: formData.get(`event-destination`),
         description: allDestinations.find((it) => it.city === formData.get(`event-destination`)).description,
@@ -92,11 +88,11 @@ export default class EventController {
       this._eventData.price = +formData.get(`event-price`);
       this._eventData.start = moment(formData.get(`event-start-time`), `D.MM.YY h:mm`).format();
       this._eventData.end = moment(formData.get(`event-end-time`), `D.MM.YY h:mm`).format();
-      this._eventData.offers = this._eventData.offers.map((it) => {
+      this._eventData.offers = Array.from(this._eventEdit.getElement().querySelectorAll(`.event__offer-selector`)).map((it) => {
         return {
-          title: it.title,
-          price: it.price,
-          isChecked: formData.get(`event-offer-${it.title}`) === `on` ? true : false
+          title: it.querySelector(`.event__offer-title`).textContent,
+          price: +it.querySelector(`.event__offer-price`).textContent,
+          accepted: it.querySelector(`.event__offer-checkbox`).checked,
         };
       });
       this._eventData.isFavorite = formData.get(`event-favorite`) === `on` ? true : false;

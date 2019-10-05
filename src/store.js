@@ -11,7 +11,6 @@ export default class Store {
   removeItem(key) {
     const items = this.getAll();
     delete items[key];
-
     this._storage.setItem(this._keysStorage.EVENTS, JSON.stringify(items));
   }
   getItem(key) {
@@ -41,7 +40,6 @@ export default class Store {
     try {
       return JSON.parse(items);
     } catch (e) {
-      console.error(`Error parse items. Error: ${e}. Items: ${items}`);
       return emptyItems;
     }
   }
