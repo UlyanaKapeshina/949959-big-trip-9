@@ -5,11 +5,8 @@ import Stats from './components/stats.js';
 import LoadingMessage from './components/loading-message.js';
 import TripController from './controllers/trip-controller.js';
 import API from './api.js';
-<<<<<<< HEAD
 import Store from './store.js';
 import Provider from './provider.js';
-=======
->>>>>>> master
 import {
   filtersNames,
   getPrice,
