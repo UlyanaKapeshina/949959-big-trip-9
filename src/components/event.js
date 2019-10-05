@@ -1,8 +1,8 @@
 import AbstractComponent from "./abstract-component.js";
-const OFFERS_COUNT = 3;
 import moment from 'moment';
 import 'moment-duration-format';
 import {TYPES_OF_EVENT} from "./../util.js";
+const OFFERS_COUNT = 3;
 export default class Event extends AbstractComponent {
   constructor({
     type,

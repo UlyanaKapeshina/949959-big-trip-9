@@ -6,6 +6,8 @@ import {
 } from "./../util.js";
 import moment from 'moment';
 import 'moment-duration-format';
+const BAR_HEIGHT = 55;
+const MIN_CTX_HEIGHT = 130;
 export default class Stats extends AbstractComponent {
   getTemplate() {
     return `<section class="statistics visually-hidden">
@@ -42,9 +44,6 @@ export default class Stats extends AbstractComponent {
     const moneyCtx = this.getElement().querySelector(`.statistics__chart--money`);
     const transportCtx = this.getElement().querySelector(`.statistics__chart--transport`);
     const timeCtx = this.getElement().querySelector(`.statistics__chart--time`);
-    const BAR_HEIGHT = 55;
-    const MIN_CTX_HEIGHT = 130;
-    // TYPES_OF_EVENT.find((it) => it.id === type).title
     const types = Array.from(new Set(eventsData.map((it) => it.type.toUpperCase())));
     const money = eventsData.map((it) => it.price);
     moneyCtx.height = BAR_HEIGHT * types.length > MIN_CTX_HEIGHT ? BAR_HEIGHT * types.length : MIN_CTX_HEIGHT;
@@ -119,9 +118,9 @@ export default class Stats extends AbstractComponent {
     });
 
     const transfers = TYPES_OF_TRANSFER.map((it) => it.id);
-    const events = eventsData.filter((event) => transfers.find((it) => event.type.id === it));
+    const events = eventsData.filter((event) => transfers.find((it) => event.type === it));
     const transportCount = events.reduce((acc, event) => {
-      const type = event.type.id.toUpperCase();
+      const type = event.type.toUpperCase();
       if (acc[type]) {
         acc[type] += 1;
       } else {

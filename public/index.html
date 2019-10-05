@@ -47,6 +47,13 @@
           </section>
       </div>
     </main>
+
+    <script>
+      navigator.serviceWorker.register('./sw.js')
+      .catch((error) => {
+        throw error;
+      })
+    </script>
     <script src="./bundle.js"></script>
   </body>
 </html>
